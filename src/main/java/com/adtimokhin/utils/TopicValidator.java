@@ -1,6 +1,6 @@
 package com.adtimokhin.utils;
 
-import com.adtimokhin.models.Topic;
+import com.adtimokhin.models.topic.Topic;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

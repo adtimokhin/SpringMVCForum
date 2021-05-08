@@ -1,9 +1,9 @@
 package com.adtimokhin.controllers;
 
-import com.adtimokhin.models.Roles;
-import com.adtimokhin.models.User;
-import com.adtimokhin.services.UserService;
-import com.adtimokhin.utils.Validator;
+import com.adtimokhin.enums.Role;
+import com.adtimokhin.models.user.User;
+import com.adtimokhin.services.user.UserService;
+import com.adtimokhin.utils.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,7 +26,7 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
-    private Validator validator;
+    private UserValidator userValidator;
 
     private static final String ERROR_ATTRIBUTE = "errors";
 
@@ -50,11 +50,11 @@ public class AuthController {
     public String postSignUp(@RequestParam(name = "email") String email,
                              @RequestParam(name = "password") String password,
                              @RequestParam(name = "secondPassword") String secondPassword,
-                             @RequestParam(name = "role") Roles role,
+                             @RequestParam(name = "role") Role role,
                              Model model) {
         // validations and creating a new user
         ArrayList<String> errors =
-                validator.validate(email, password, secondPassword, role);
+                userValidator.validate(email, password, secondPassword, role);
 
         if (errors == null) {
             User user = new User(email, password);

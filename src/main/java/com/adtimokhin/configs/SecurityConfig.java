@@ -1,8 +1,8 @@
 package com.adtimokhin.configs;
 
-import com.adtimokhin.models.Roles;
+import com.adtimokhin.enums.Role;
 import com.adtimokhin.security.AuthProvider;
-import com.adtimokhin.services.impl.UserDetailsServiceImpl;
+import com.adtimokhin.services.user.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -35,14 +35,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //TODO: I want custom error pages (404, 500)
         //TODO: Add an automatic login after the sign up.
         http.authorizeRequests()
                 .antMatchers("/forum" , "/defaultSuccessUrl").authenticated()
                 .antMatchers("/login", "/sign_up").anonymous()
-                .antMatchers("/admin/*").hasRole(Roles.ROLE_ADMIN.getRole())
-                .antMatchers("/student/*").hasRole(Roles.ROLE_STUDENT.getRole())
-                .antMatchers("/parent/*").hasRole(Roles.ROLE_PARENT.getRole())
+                .antMatchers("/admin/*").hasRole(Role.ROLE_ADMIN.getRole())
+                .antMatchers("/student/*").hasRole(Role.ROLE_STUDENT.getRole())
+                .antMatchers("/parent/*").hasRole(Role.ROLE_PARENT.getRole())
                 .antMatchers("/*" , "/").permitAll()
                 .and().csrf().disable()
                 .formLogin().loginPage("/login").loginProcessingUrl("/login/process")

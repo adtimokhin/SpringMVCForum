@@ -1,11 +1,11 @@
 package com.adtimokhin.controllers;
 
-import com.adtimokhin.models.Comment;
-import com.adtimokhin.models.Topic;
+import com.adtimokhin.models.comment.Comment;
+import com.adtimokhin.models.topic.Topic;
 import com.adtimokhin.security.ContextProvider;
-import com.adtimokhin.services.CommentService;
-import com.adtimokhin.services.LikeService;
-import com.adtimokhin.services.TopicService;
+import com.adtimokhin.services.comment.CommentService;
+import com.adtimokhin.services.like.LikeService;
+import com.adtimokhin.services.topic.TopicService;
 import com.adtimokhin.utils.TopicValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
