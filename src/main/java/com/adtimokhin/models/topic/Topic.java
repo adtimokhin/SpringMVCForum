@@ -5,6 +5,7 @@ import com.adtimokhin.models.user.User;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author adtimokhin
@@ -33,6 +34,14 @@ public class Topic {
 
     @OneToMany(mappedBy = "topic")
     private List<Comment> comments;
+
+    @ManyToMany
+    @JoinTable(
+            name = "tagged_topics",
+            joinColumns = @JoinColumn(name = "topic_id"),
+            inverseJoinColumns =  @JoinColumn(name = "tag_id")
+    )
+    private Set<TopicTag> tags;
 
 
     public long getId() {
@@ -67,4 +76,19 @@ public class Topic {
         this.user = user;
     }
 
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public Set<TopicTag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<TopicTag> tags) {
+        this.tags = tags;
+    }
 }

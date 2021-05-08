@@ -2,9 +2,11 @@ package com.adtimokhin.services.topic.impl;
 
 import com.adtimokhin.enums.Role;
 import com.adtimokhin.models.topic.Topic;
+import com.adtimokhin.models.topic.TopicTag;
 import com.adtimokhin.repositories.topic.TopicRepository;
 import com.adtimokhin.security.ContextProvider;
 import com.adtimokhin.services.topic.TopicService;
+import com.adtimokhin.services.topic.TopicTagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,12 +26,27 @@ public class TopicServiceImpl implements TopicService {
     private TopicRepository topicRepository;
 
     @Autowired
+    private TopicTagService topicTagService;
+
+    @Autowired
     private ContextProvider contextProvider;
 
     @Override
     public void addTopic(Topic topic) {
         topic.setUser(contextProvider.getUser());
         topicRepository.save(topic);
+    }
+
+    @Override
+    public void addTopic(Topic topic, String... tags) {
+        setTags(topic, tags);
+        addTopic(topic);
+    }
+
+    @Override
+    public void addTopic(Topic topic, Set<TopicTag> tags) {
+        topic.setTags(tags);
+        addTopic(topic);
     }
 
     @Override
@@ -47,6 +64,16 @@ public class TopicServiceImpl implements TopicService {
     public List<Topic> getAllTopicsForStudents() {
         Set<Role> roles = Collections.singleton(Role.ROLE_STUDENT);
         return topicRepository.getAllByUser_RolesIsContaining(roles);
+    }
+
+    @Override
+    public void setTags(Topic topic, String... tags) {
+        for (String tag : tags) {
+            if (!topicTagService.tagExists(tag)) {
+                topicTagService.addTag(tag);
+            }
+        }
+        topic.setTags(topicTagService.getTagsByNames(tags));
     }
 
 
