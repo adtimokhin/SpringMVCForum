@@ -16,11 +16,15 @@ public interface ReportService {
 
     List<Report> getAll();
 
+    Report getById(long id);
+
     List<Report> getAllByReportedUser(User user);
 
     List<Report> getAllByReportedUser(long id);
 
     void addReport(long commentOrTopicId, boolean isComment , long reportedUserId, long reportingUserId, long causeId);
+
+    void banUser(Report report, String reason, User admin);
 
 
 

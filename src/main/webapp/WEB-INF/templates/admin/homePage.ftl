@@ -6,5 +6,6 @@
 </head>
 <body>
     <h1>Admin home)).....</h1>
+<a href="/admin/get/reports">JKOPOJHBEJIOPKJONENOKP</a>
 </body>
 </html>

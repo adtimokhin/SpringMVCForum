@@ -11,7 +11,7 @@
         <td>reported user</td>
         <td>reporting user</td>
         <td>cause</td>
-        <td>_____________</td>
+        <td></td>
 
     </tr>
     <#list reports as report>
@@ -20,8 +20,10 @@
             <td>____</td>
             <td>${report.getReportedUser().getFullName()}</td>
             <td>${report.getReportingUser().getFullName()}</td>
-            <td>${report.cause_id}</td>
-            <td>Later this will take to the detailed analyse page</td>
+            <td>${report.cause.title}</td>
+            <td>
+                <a href="/admin/get/report/${report.id}"> View report details</a>
+            </td>
         </tr>
     </#list>
 </table>

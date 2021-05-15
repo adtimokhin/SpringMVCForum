@@ -1,6 +1,8 @@
 package com.adtimokhin.controllers;
 
 import com.adtimokhin.enums.Role;
+import com.adtimokhin.services.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -15,13 +17,17 @@ import javax.servlet.http.HttpServletRequest;
 public class DefaultController {
 
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/")
     public String index() {
+        userService.banUser(userService.getUser(14));
         return "index";
     }
 
     /**
-     * method used to direct a recently signed in user to his own home page, depending on a role he/she has.
+     * method used to direct a recently signed in user to his own home page, depending on a role the user has.
      **/
     @GetMapping("/defaultSuccessUrl")
     public String defaultSuccessUrl(HttpServletRequest request) {

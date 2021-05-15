@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(long id) {
-        return repository.getOne(id);
+        return repository.findById(id);
     }
 
     @Override
@@ -95,6 +95,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAllBannedUsers() {
         return repository.getAllByBanned(true);
+    }
+
+    @Override
+    public void banUser(User user) {
+        user.setBanned(true);
+        repository.save(user);
     }
 
 

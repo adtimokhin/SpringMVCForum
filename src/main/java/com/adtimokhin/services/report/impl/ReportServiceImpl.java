@@ -1,5 +1,6 @@
 package com.adtimokhin.services.report.impl;
 
+import com.adtimokhin.enums.Role;
 import com.adtimokhin.models.report.Report;
 import com.adtimokhin.models.user.User;
 import com.adtimokhin.repositories.report.CauseRepository;
@@ -44,6 +45,11 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    public Report getById(long id) {
+        return reportRepository.findById(id);
+    }
+
+    @Override
     public List<Report> getAllByReportedUser(User user) {
         return reportRepository.findAllByReportedUser(user);
     }
@@ -69,5 +75,13 @@ public class ReportServiceImpl implements ReportService {
         report.setCause(causeRepository.findById(causeId));
 
         reportRepository.save(report);
+    }
+
+    @Override
+    public void banUser(Report report, String reason, User admin) {
+        if (admin.getRoles().contains(Role.ROLE_ADMIN)){
+            userService.banUser(report.getReportedUser());
+            reportRepository.delete(report);
+        }
     }
 }

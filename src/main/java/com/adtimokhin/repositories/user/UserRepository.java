@@ -16,6 +16,8 @@ public interface UserRepository extends JpaRepository<User, Long>{
     User findByEmail(String email);
 
     List<User> getAllByBanned(boolean banned);
+
+    User findById(long id);
 }
 //public interface UserRepository extends JpaRepository<User, Long> {
 //
