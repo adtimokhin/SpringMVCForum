@@ -120,4 +120,3 @@ buildNumber.properties
 .flattened-pom.xml
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,maven
-/src/main/webapp/WEB-INF/templates/error/404.ftl

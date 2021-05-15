@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -46,6 +47,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUser(long id) {
+        return repository.getOne(id);
+    }
+
+    @Override
     public void addUser(User user, Role... roles) {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -74,6 +80,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(User user) {
         repository.delete(user);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return repository.findAll();
+    }
+
+    @Override
+    public List<User> getAllReportedUsers() {
+        return getAllUsers();
+    }
+
+    @Override
+    public List<User> getAllBannedUsers() {
+        return repository.getAllByBanned(true);
     }
 
 

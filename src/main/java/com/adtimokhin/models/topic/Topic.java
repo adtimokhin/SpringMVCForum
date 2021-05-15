@@ -1,6 +1,7 @@
 package com.adtimokhin.models.topic;
 
 import com.adtimokhin.models.comment.Comment;
+import com.adtimokhin.models.report.Report;
 import com.adtimokhin.models.user.User;
 
 import javax.persistence.*;
@@ -34,6 +35,9 @@ public class Topic {
 
     @OneToMany(mappedBy = "topic")
     private List<Comment> comments;
+
+    @OneToMany(mappedBy = "topic")
+    private List<Report> reports;
 
     @ManyToMany
     @JoinTable(

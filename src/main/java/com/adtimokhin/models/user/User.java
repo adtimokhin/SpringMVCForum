@@ -3,6 +3,7 @@ package com.adtimokhin.models.user;
 import com.adtimokhin.enums.Role;
 import com.adtimokhin.models.comment.Comment;
 import com.adtimokhin.models.like.Like;
+import com.adtimokhin.models.report.Report;
 import com.adtimokhin.models.topic.Topic;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -32,13 +33,6 @@ public class User {
     @Size(min = 5, message = "your password should be at least 5 figures long")
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "table_roles", joinColumns = @JoinColumn(name = "id"))
-    @Column(name = "name")
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Fetch(FetchMode.SUBSELECT)
-    private Set<Role> roles;
-
     @ManyToOne
     @JoinColumn(name = "user_name")
     private UserName userName;
@@ -46,6 +40,16 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "user_surname")
     private UserSurname userSurname;
+
+    @Column(name = "banned")
+    private boolean banned = false;
+
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "table_roles", joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "name")
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<Role> roles;
 
     @OneToMany(mappedBy = "user")
     private List<Comment> comments;
@@ -56,6 +60,11 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Like> likes;
 
+    @OneToMany(mappedBy = "reportedUser")
+    private List<Report> reportsForUser;
+
+    @OneToMany(mappedBy = "reportingUser")
+    private List<Report> reportsByUser;
 
 
     // constructors
@@ -141,8 +150,16 @@ public class User {
         this.likes = likes;
     }
 
+    public boolean isBanned() {
+        return banned;
+    }
+
+    public void setBanned(boolean banned) {
+        this.banned = banned;
+    }
+
     //methods
-    public String getFullName(){
+    public String getFullName() {
         String name = getUserName().getName();
         String surname = getUserSurname().getSurname();
         return surname + " " + name;

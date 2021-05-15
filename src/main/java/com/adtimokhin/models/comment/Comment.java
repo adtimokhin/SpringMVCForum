@@ -1,6 +1,7 @@
 package com.adtimokhin.models.comment;
 
 import com.adtimokhin.models.like.Like;
+import com.adtimokhin.models.report.Report;
 import com.adtimokhin.models.topic.Topic;
 import com.adtimokhin.models.user.User;
 
@@ -39,6 +40,9 @@ public class Comment {
 
     @OneToMany(mappedBy = "comment")
     private List<Like> likes;
+
+    @OneToMany(mappedBy = "comment")
+    private List<Report> reports;
 
     @ManyToMany
     @JoinTable(
@@ -103,6 +107,14 @@ public class Comment {
 
     public void setTags(Set<CommentTag> tags) {
         this.tags = tags;
+    }
+
+    public List<Report> getReports() {
+        return reports;
+    }
+
+    public void setReports(List<Report> reports) {
+        this.reports = reports;
     }
 
     public String getTagNames(){
