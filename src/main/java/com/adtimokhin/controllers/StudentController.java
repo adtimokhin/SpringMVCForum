@@ -122,6 +122,11 @@ public class StudentController {
         return "redirect:/student/topic/" + topicId;
     }
 
+    @PostMapping("/update/comment/flag")
+    public String flagComment(@RequestParam(name = "commentId") long commentId){
+        commentService.flagComment(commentId, contextProvider.getUser());
+        return "redirect:/student/topics";
+    }
     // add a like to a comment
     @PostMapping("/add/like")
     public String studentAddLike(@RequestParam(name = "comment") long commentId) {

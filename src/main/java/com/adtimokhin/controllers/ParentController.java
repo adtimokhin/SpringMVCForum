@@ -64,11 +64,16 @@ public class ParentController {
         model.addAttribute("likedComments", likedCommentIds);
         model.addAttribute("topic", topic);
         model.addAttribute("comments", comments);
-//        if (comments == null){
-//            model.addAttribute("comments", "No comments yet...");
-//        }else {
-//            model.addAttribute("comments", comments);
-//        }
+
+        //some special functionality is only available to a user that have initiated the topic.
+        // We need to check if a user that gets the view is the same user that have created the topic.
+
+        if (topic.getUser().getId() == contextProvider.getUser().getId()) {
+            model.addAttribute("theCreator", true);
+        } else {
+            model.addAttribute("theCreator", false);
+        }
+
         return "/parent/parentTopicPage";
     }
 
@@ -100,6 +105,11 @@ public class ParentController {
         return "redirect:/parent/topic/" + topicId;
     }
 
+    @PostMapping("/update/comment/flag")
+    public String flagComment(@RequestParam(name = "commentId") long commentId){
+        commentService.flagComment(commentId, contextProvider.getUser());
+        return "redirect:/parent/topics";
+    }
 
     @PostMapping("/add/like")
     public String parentAddLike(@RequestParam(name = "comment") long commentId) {

@@ -3,6 +3,7 @@ package com.adtimokhin.services.comment.impl;
 import com.adtimokhin.models.comment.Comment;
 import com.adtimokhin.models.comment.CommentTag;
 import com.adtimokhin.models.topic.Topic;
+import com.adtimokhin.models.user.User;
 import com.adtimokhin.repositories.comment.CommentRepository;
 import com.adtimokhin.security.ContextProvider;
 import com.adtimokhin.services.comment.CommentService;
@@ -112,6 +113,18 @@ public class CommentServiceImpl implements CommentService {
         }
         if (c.size() == 0){return null;}
         return c;
+    }
+
+    @Override
+    public void flagComment(long id, User user) {
+        Comment comment = getCommentById(id);
+        if(comment == null){
+            return;
+        }
+        if(comment.getTopic().getUser().equals(user)){
+            comment.setFlagged(true);
+            commentRepository.save(comment);
+        }
     }
 
 

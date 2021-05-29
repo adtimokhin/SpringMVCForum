@@ -69,6 +69,7 @@
             <td></td>
             <td>Tags</td>
             <td></td>
+            <td></td>
         </tr>
         <#list comments as comment>
             <tr>
@@ -103,6 +104,14 @@
                             <input type="submit" value="Report">
                         </form>
                     </div>
+                </td>
+                <td>
+                    <#if theCreator == true>
+                        <form method="post" action="/${role}/update/comment/flag">
+                            <input type="hidden" name="commentId" value="${comment.getId()}">
+                            <input type="submit" value="Flag">
+                        </form>
+                    </#if>
                 </td>
             </tr>
         </#list>

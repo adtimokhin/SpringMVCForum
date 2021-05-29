@@ -158,6 +158,11 @@ public class User {
         this.banned = banned;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return ((User) this).getId() == ((User) obj).getId();
+    }
+
     //methods
     public String getFullName() {
         String name = getUserName().getName();

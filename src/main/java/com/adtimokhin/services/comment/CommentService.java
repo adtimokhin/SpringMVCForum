@@ -1,6 +1,7 @@
 package com.adtimokhin.services.comment;
 
 import com.adtimokhin.models.comment.Comment;
+import com.adtimokhin.models.user.User;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,4 +36,6 @@ public interface CommentService {
 
     @Nullable
     List<Comment> getFlagged(List<Comment> comments);
+
+    void flagComment(long id, User user);
 }
