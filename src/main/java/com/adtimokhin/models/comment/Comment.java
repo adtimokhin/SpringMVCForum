@@ -52,6 +52,9 @@ public class Comment {
     )
     private Set<CommentTag> tags;
 
+    @Column(name = "flagged")
+    private boolean flagged;
+
 
     public long getId() {
         return id;
@@ -117,7 +120,15 @@ public class Comment {
         this.reports = reports;
     }
 
+    public boolean isFlagged() {
+        return flagged;
+    }
+
+    public void setFlagged(boolean flagged) {
+        this.flagged = flagged;
+    }
+
     public String getTagNames(){
-         return Arrays.toString(this.getTags().stream().map(CommentTag::getTagName).collect(Collectors.toList()).toArray());
+        return Arrays.toString(this.getTags().stream().map(CommentTag::getTagName).collect(Collectors.toList()).toArray());
     }
 }

@@ -26,6 +26,8 @@ public interface ReportService {
 
     void banUser(Report report, String reason, User admin);
 
+    void unBanUser(User user, User admin);
+
 
 
 }

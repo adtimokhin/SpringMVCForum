@@ -26,7 +26,7 @@
     <p><b>${topic.description}</b></p>
 </#if>
 
-<form method="post" action="/admin/update/user">
+<form method="post" action="/admin/update/block/user">
     <p> You want to ban user? (${reportedUser.id})</p>
     <label>
         <input type="text" name="reason">

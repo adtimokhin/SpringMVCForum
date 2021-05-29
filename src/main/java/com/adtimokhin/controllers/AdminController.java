@@ -34,9 +34,15 @@ public class AdminController {
         return "admin/homePage";
     }
 
+    @GetMapping("get/blockedUsers")
+    public String getBlockedUsers(Model model){
+        model.addAttribute("users" , userService.getAllBannedUsers());
+        return "admin/bannedUsersPage";
+    }
+
     @GetMapping("get/reports")
     public String getReports(Model model) {
-        model.addAttribute("reports", reportService.getAll());
+        model.addAttribute("reports", reportService.getAll()); //Todo: не отображаются корректно репорты, потому что, мы всегда считаем, что все репорты ссылаются на комментарий, а не на топик. Нужно фиксить, дружище.
         return "admin/reports";
     }
 
@@ -63,11 +69,17 @@ public class AdminController {
         return "admin/fullReport";
     }
 
-    @PostMapping("/update/user")
+    @PostMapping("/update/block/user")
     public String banUser(@RequestParam(name = "reason") String reason,
                           @RequestParam(name = "reportId") long reportId){
         reportService.banUser(reportService.getById(reportId) , reason ,contextProvider.getUser());
         return "redirect:/admin/home";
 
+    }
+
+    @PostMapping("/update/unblock/user")
+    public String unBanUser(@RequestParam(name = "userId") long id){
+        reportService.unBanUser(userService.getUser(id) , contextProvider.getUser());
+        return "redirect:/admin/home";
     }
 }

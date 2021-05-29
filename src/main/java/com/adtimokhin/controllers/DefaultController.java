@@ -17,12 +17,9 @@ import javax.servlet.http.HttpServletRequest;
 public class DefaultController {
 
 
-    @Autowired
-    private UserService userService;
 
     @GetMapping("/")
     public String index() {
-        userService.banUser(userService.getUser(14));
         return "index";
     }
 

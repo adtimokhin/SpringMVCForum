@@ -103,5 +103,11 @@ public class UserServiceImpl implements UserService {
         repository.save(user);
     }
 
+    @Override
+    public void unBanUser(User user) {
+        user.setBanned(false);
+        repository.save(user);
+    }
+
 
 }

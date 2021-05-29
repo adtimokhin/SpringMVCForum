@@ -62,6 +62,53 @@
     </html>
 </#macro>
 
+<#macro commentSection comments role="student">
+    <table>
+        <tr>
+            <td>Comment left by:</td>
+            <td></td>
+            <td>Tags</td>
+            <td></td>
+        </tr>
+        <#list comments as comment>
+            <tr>
+                <td>${comment.user.getFullName()}</td>
+                <td>${comment.getText()}</td>
+                <td>
+                </td>
+                <td>
+                    <#if likedComments?seq_index_of(comment.getId()) == -1>
+                        <div>
+                            <p>Not liked</p>
+                            <form method="post" action="/${role}/add/like">
+                                <input type="hidden" name="comment" value="${comment.getId()}">
+                                <input type="submit" value="Like">
+                            </form>
+                        </div>
+                    <#else>
+                        <p>Liked</p>
+                        <div>
+                            <form method="post" action="/${role}/remove/like">
+                                <input hidden name="comment" value="${comment.getId()}">
+                                <input type="submit" value="Unlike">
+                            </form>
+                        </div>
+                    </#if>
+                    <div>
+                        <form method="post" action="/${role}/add/report">
+                            <input type="hidden" name="commentOrTopicId" value="${comment.getId()}">
+                            <input type="hidden" name="isComment" value="true">
+                            <input type="hidden" name="reportedUserId" value="${comment.getUser().getId()}">
+                            <input type="hidden" name="causeId" value="1">
+                            <input type="submit" value="Report">
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        </#list>
+    </table>
+</#macro>
+
 <#macro topicFullPage role="student" pageName="Default head name">
     <!DOCTYPE html>
     <html lang="en">
@@ -79,49 +126,25 @@
         <p>
             ${topic.user.getFullName()}
         </p>
+        <div>
+            <form method="post" action="/${role}/add/report">
+                <input type="hidden" name="commentOrTopicId" value="${topic.getId()}">
+                <input type="hidden" name="isComment" value="false">
+                <input type="hidden" name="reportedUserId" value="${topic.getUser().getId()}">
+                <input type="hidden" name="causeId" value="1">
+                <input type="submit" value="Report">
+            </form>
+        </div>
     </div>
 
     <div>
         <h5>Comments</h5>
-        <table>
-            <tr>
-                <td>Comment left by:</td>
-                <td></td>
-                <td>Tags</td>
-                <td></td>
-            </tr>
-            <#list comments as comment>
-                <tr>
-                    <td>${comment.user.getFullName()}</td>
-                    <td>${comment.getText()}</td>
-                    <td>
-<#--                        <#list comment.getTagNames() as name>-->
-<#--                            <p>${name}</p>-->
-<#--                        </#list>-->
-<#--                        ${comment.getTagNames()}-->
-                    </td>
-                    <td>
-                        <#if likedComments?seq_index_of(comment.getId()) == -1>
-                            <div>
-                                <p>Not liked</p>
-                                <form method="post" action="/${role}/add/like">
-                                    <input hidden name="comment" value="${comment.getId()}">
-                                    <input type="submit">
-                                </form>
-                            </div>
-                        <#else>
-                            <p>Liked</p>
-                            <div>
-                                <form method="post" action="/${role}/remove/like">
-                                    <input hidden name="comment" value="${comment.getId()}">
-                                    <input type="submit" value="Unlike">
-                                </form>
-                            </div>
-                        </#if>
-                    </td>
-                </tr>
-            </#list>
-        </table>
+        <#if flaggedComments??>
+            <p>Flagged Comments</p>
+            <@commentSection comments = flaggedComments role="${role}"></@commentSection>
+            <p>All Comments:</p>
+        </#if>
+        <@commentSection comments=comments role="${role}"></@commentSection>
     </div>
 
     <div>
@@ -129,10 +152,10 @@
             <input type="text" name="msg">
             <input hidden="hidden" value="${topic.getId()}" name="topicId">
             <div>
-               <#list commentTags as tag>
-                   <input type="checkbox" id="${tag.getId()}" value="${tag.getId()}" name="tags">
-                   <label for="${tag.getId()}">${tag.getTagName()}</label>
-               </#list>
+                <#list commentTags as tag>
+                    <input type="checkbox" id="${tag.getId()}" value="${tag.getId()}" name="tags">
+                    <label for="${tag.getId()}">${tag.getTagName()}</label>
+                </#list>
             </div>
             <input type="submit">
         </form>

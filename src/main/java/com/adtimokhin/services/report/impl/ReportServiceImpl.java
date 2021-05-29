@@ -84,4 +84,11 @@ public class ReportServiceImpl implements ReportService {
             reportRepository.delete(report);
         }
     }
+
+    @Override
+    public void unBanUser(User user, User admin) {
+        if(admin.getRoles().contains(Role.ROLE_ADMIN)){
+            userService.unBanUser(user);
+        }
+    }
 }

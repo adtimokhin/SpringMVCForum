@@ -10,6 +10,7 @@ import com.adtimokhin.services.topic.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,13 +41,13 @@ public class CommentServiceImpl implements CommentService {
         comment.setUser(contextProvider.getUser());
         comment.setText(text);
         Topic topic = topicService.getTopic(topicId);
-        if (topic == null){ //TODO: add this sort of checks in all services
+        if (topic == null) { //TODO: add this sort of checks in all services
             //TODO: when logging will be added, this kind of issue should be logged.
             return;
         }
         comment.setTopic(topic);
         comment.setTotalLikes(0);
-        setTags(comment , tagIds);
+        setTags(comment, tagIds);
 //        commentRepository.save(comment);
 
     }
@@ -59,7 +60,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<Comment> getAllCommentsByTopic(long topicId) {
         Topic topic = topicService.getTopic(topicId);
-        if(topic == null){
+        if (topic == null) {
             //TODO: when logging will be added, this kind of issue should be logged.
             return null;
         }
@@ -93,6 +94,24 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<String> getTagNames(Comment comment) {
         return comment.getTags().stream().map(CommentTag::getTagName).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Comment> getFlagged(long topicId) {
+        return null;
+    }
+
+    @Override
+    public List<Comment> getFlagged(List<Comment> comments) {
+        List<Comment> c = new ArrayList<>();
+        for (Comment comment:
+             comments) {
+            if(comment.isFlagged()){
+                c.add(comment);
+            }
+        }
+        if (c.size() == 0){return null;}
+        return c;
     }
 
 

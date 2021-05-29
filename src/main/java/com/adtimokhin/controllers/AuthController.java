@@ -32,6 +32,8 @@ public class AuthController {
 
     @RequestMapping("/login")
     public String getSignIn(@RequestParam(value = "error", required = false) Boolean error, Model model) {
+        //Todo: когда юзер заблокирован, он все равно получает это же сообщение. Сообщение для заблокированных юзеров
+        // должно быть иним
         if (Boolean.TRUE.equals(error)) {
             model.addAttribute("error", true);
         }

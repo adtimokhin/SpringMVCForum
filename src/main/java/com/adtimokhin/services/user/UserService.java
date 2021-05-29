@@ -33,4 +33,6 @@ public interface UserService {
     List<User> getAllBannedUsers();
 
     void banUser(User user);
+
+    void unBanUser(User user);
 }

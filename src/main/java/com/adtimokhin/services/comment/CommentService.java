@@ -1,6 +1,7 @@
 package com.adtimokhin.services.comment;
 
 import com.adtimokhin.models.comment.Comment;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,4 +30,9 @@ public interface CommentService {
     void setTags(Comment comment, List<Long> tagIds);
 
     List<String> getTagNames(Comment comment);
+
+    List<Comment> getFlagged(long topicId);
+
+    @Nullable
+    List<Comment> getFlagged(List<Comment> comments);
 }

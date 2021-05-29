@@ -22,13 +22,15 @@ public class LogAdminAspect {
     @Autowired
     private Logger logger;
 
+    // TODO:  When I'll have access to the internet, I need to add log option for the aspect methods.
+
     @After("execution( * com.adtimokhin.services.user.UserService.banUser(..))")
     public void afterUserBannedInvocation(JoinPoint jp) {
         System.out.println("User " + ((User) jp.getArgs()[0]).getId() + " was banned at " + System.currentTimeMillis());
     }
 
     @Before("execution(* com.adtimokhin.services.report.ReportService.banUser(..))")
-    public void afterReportedUserBannedInvocation(JoinPoint jp) {
+    public void beforeReportedUserBannedInvocation(JoinPoint jp) {
         Object[] args = jp.getArgs();
 
         Report report = (Report) args[0];
@@ -49,5 +51,13 @@ public class LogAdminAspect {
                     ". REPORTED USER WAS BANNED. REASON:" + reason);
         }
 
+    }
+
+    @After("execution(* com.adtimokhin.services.report.ReportService.unBanUser(..))")
+    public void afterUserUnBannedInvocation(JoinPoint jp) {
+        User u = (User) jp.getArgs()[0];
+        User admin = (User) jp.getArgs()[1];
+
+        System.out.println("User " + u.getId() + " was unbanned at " + System.currentTimeMillis() + " by admin " + admin.getId());
     }
 }

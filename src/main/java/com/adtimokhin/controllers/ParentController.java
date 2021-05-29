@@ -5,6 +5,7 @@ import com.adtimokhin.models.topic.Topic;
 import com.adtimokhin.security.ContextProvider;
 import com.adtimokhin.services.comment.CommentService;
 import com.adtimokhin.services.like.LikeService;
+import com.adtimokhin.services.report.ReportService;
 import com.adtimokhin.services.topic.TopicService;
 import com.adtimokhin.utils.TopicValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ public class ParentController {
     private LikeService likeService;
 
     @Autowired
+    private ReportService reportService;
+
+    @Autowired
     private ContextProvider contextProvider;
 
     @GetMapping("/topics")
@@ -52,6 +56,10 @@ public class ParentController {
             return "redirect:/parent/topics";
         }
         List<Comment> comments = commentService.getAllCommentsByTopic(id);
+        List<Comment> flaggedComments = commentService.getFlagged(comments);
+        if (flaggedComments != null) {
+            model.addAttribute("flaggedComments", flaggedComments);
+        }
         List<Long> likedCommentIds = likeService.getAllLikedCommentIdsByUser(contextProvider.getUser(), comments);
         model.addAttribute("likedComments", likedCommentIds);
         model.addAttribute("topic", topic);
@@ -105,6 +113,18 @@ public class ParentController {
     public String parentRemoveLike(@RequestParam(name = "comment") long commentId) {
         Comment comment = commentService.getCommentById(commentId); // Todo: это обращение к бд - ненужное и зря нагружает систему. Нужно это как-то пофиксить
         likeService.deleteLike(contextProvider.getUser(), comment);
+        return "redirect:/parent/topics";
+    }
+
+    // working with reports and bans
+    @PostMapping("add/report")
+    public String addReport(
+            @RequestParam(name = "commentOrTopicId") long commentOrTopicId,
+            @RequestParam(name = "isComment") Boolean isComment,
+            @RequestParam(name = "reportedUserId") long reportedUserId,
+            @RequestParam(name = "causeId") long causeId
+    ) {
+        reportService.addReport(commentOrTopicId, isComment, reportedUserId, contextProvider.getUser().getId(), causeId);
         return "redirect:/parent/topics";
     }
 }

@@ -3,10 +3,7 @@ package com.adtimokhin.security;
 import com.adtimokhin.models.user.User;
 import com.adtimokhin.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,6 +31,11 @@ public class AuthProvider implements AuthenticationProvider {
         //checking email
         if (user == null) {
             throw new AuthenticationCredentialsNotFoundException("No such account is found");
+        }
+
+        //checking if user is blocked
+        if (user.isBanned()) {
+            throw new LockedException("User is blocked");
         }
 
         //checking passwords

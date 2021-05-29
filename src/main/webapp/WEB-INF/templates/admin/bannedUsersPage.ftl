@@ -13,6 +13,14 @@
     <#list users as user>
         <tr>
             <td>${user.getFullName()}</td>
+            <td>
+                <div>
+                    <form action="/admin/update/unblock/user" method="post">
+                        <input type="hidden" name="userId" value="${user.getId()}">
+                        <input type="submit">
+                    </form>
+                </div>
+            </td>
         </tr>
     </#list>
 </table>

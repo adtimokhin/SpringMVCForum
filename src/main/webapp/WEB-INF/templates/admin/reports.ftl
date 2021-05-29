@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>All users</title>
 </head>
+<body>
 <table>
     <tr>
         <td>comment id</td>
@@ -27,4 +28,5 @@
         </tr>
     </#list>
 </table>
+</body>
 </html>
