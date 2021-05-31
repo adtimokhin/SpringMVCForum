@@ -38,18 +38,20 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void addComment(String text, long topicId, List<Long> tagIds) {
-        Comment comment = new Comment();
-        comment.setUser(contextProvider.getUser());
-        comment.setText(text);
         Topic topic = topicService.getTopic(topicId);
         if (topic == null) { //TODO: add this sort of checks in all services
             //TODO: when logging will be added, this kind of issue should be logged.
             return;
         }
+        if(topic.isClosed()){
+            return;
+        }
+        Comment comment = new Comment();
+        comment.setUser(contextProvider.getUser());
+        comment.setText(text);
         comment.setTopic(topic);
         comment.setTotalLikes(0);
         setTags(comment, tagIds);
-//        commentRepository.save(comment);
 
     }
 

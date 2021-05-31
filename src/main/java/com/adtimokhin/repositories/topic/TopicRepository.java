@@ -15,5 +15,8 @@ import java.util.Set;
 
 @Repository
 public interface TopicRepository extends JpaRepository<Topic, Long> {
+
     List<Topic> getAllByUser_RolesIsContaining(Set<Role> roles);
+
+    Topic getById(long id);
 }

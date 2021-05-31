@@ -2,8 +2,10 @@ package com.adtimokhin.controllers;
 
 import com.adtimokhin.models.comment.Comment;
 import com.adtimokhin.models.topic.Topic;
+import com.adtimokhin.models.user.User;
 import com.adtimokhin.security.ContextProvider;
 import com.adtimokhin.services.comment.CommentService;
+import com.adtimokhin.services.comment.impl.CommentTagsServiceImpl;
 import com.adtimokhin.services.like.LikeService;
 import com.adtimokhin.services.report.ReportService;
 import com.adtimokhin.services.topic.TopicService;
@@ -40,6 +42,9 @@ public class ParentController {
     private ReportService reportService;
 
     @Autowired
+    private CommentTagsServiceImpl tagsService;
+
+    @Autowired
     private ContextProvider contextProvider;
 
     @GetMapping("/topics")
@@ -60,19 +65,27 @@ public class ParentController {
         if (flaggedComments != null) {
             model.addAttribute("flaggedComments", flaggedComments);
         }
-        List<Long> likedCommentIds = likeService.getAllLikedCommentIdsByUser(contextProvider.getUser(), comments);
+        User u = contextProvider.getUser();
+        List<Long> likedCommentIds = likeService.getAllLikedCommentIdsByUser(u, comments);
         model.addAttribute("likedComments", likedCommentIds);
         model.addAttribute("topic", topic);
         model.addAttribute("comments", comments);
+        model.addAttribute("commentTags", tagsService.getAllCommentTags());
 
         //some special functionality is only available to a user that have initiated the topic.
         // We need to check if a user that gets the view is the same user that have created the topic.
-
-        if (topic.getUser().getId() == contextProvider.getUser().getId()) {
-            model.addAttribute("theCreator", true);
-        } else {
+        if(topicService.isUserCreatedTopic(topic, u)){
+            model.addAttribute("theCreator" , true);
+        }else {
             model.addAttribute("theCreator", false);
         }
+
+        if(topic.isClosed()){
+            model.addAttribute("closed" , true);
+        }else {
+            model.addAttribute("closed" , false);
+        }
+
 
         return "/parent/parentTopicPage";
     }
@@ -93,6 +106,20 @@ public class ParentController {
         topicService.addTopic(topic);
         return "redirect:/parent/topics";
 
+    }
+
+    @PostMapping("/update/topic/close")
+    public String closeTopic(@RequestParam(name = "topicId") long topicId){
+        User user = contextProvider.getUser();
+        topicService.close(topicId, user);
+        return "redirect:/parent/topics";
+    }
+
+    @PostMapping("/update/topic/open")
+    public String openTopic(@RequestParam(name = "topicId") long topicId){
+        User user = contextProvider.getUser();
+        topicService.open(topicId, user);
+        return "redirect:/parent/topics";
     }
 
     //adding a new comment

@@ -2,6 +2,7 @@ package com.adtimokhin.controllers;
 
 import com.adtimokhin.models.comment.Comment;
 import com.adtimokhin.models.topic.Topic;
+import com.adtimokhin.models.user.User;
 import com.adtimokhin.security.ContextProvider;
 import com.adtimokhin.services.comment.CommentService;
 import com.adtimokhin.services.comment.impl.CommentTagsServiceImpl;
@@ -69,18 +70,26 @@ public class StudentController {
         if (flaggedComments != null){
             model.addAttribute("flaggedComments" , flaggedComments);
         }
-        List<Long> likedCommentIds = likeService.getAllLikedCommentIdsByUser(contextProvider.getUser(), comments);
+        User u = contextProvider.getUser();
+        List<Long> likedCommentIds = likeService.getAllLikedCommentIdsByUser(u, comments);
         model.addAttribute("likedComments", likedCommentIds);
         model.addAttribute("topic", topic);
         model.addAttribute("comments", comments);
         model.addAttribute("commentTags", tagsService.getAllCommentTags());
 
+        //some special functionality is only available to a user that have initiated the topic.
+        // We need to check if a user that gets the view is the same user that have created the topic
+        if(topicService.isUserCreatedTopic(topic, u)){
+            model.addAttribute("theCreator" , true);
+        }else {
+            model.addAttribute("theCreator", false);
+        }
 
-//        if (comments == null){
-//            model.addAttribute("comments", "No comments yet...");
-//        }else {
-//            model.addAttribute("comments", comments);
-//        }
+        if(topic.isClosed()){
+            model.addAttribute("closed" , true);
+        }else {
+            model.addAttribute("closed" , false);
+        }
         return "/student/studentTopicPage";
     }
 
@@ -105,6 +114,20 @@ public class StudentController {
 
     }
 
+    @PostMapping("/update/topic/close")
+    public String closeTopic(@RequestParam(name = "topicId") long topicId){
+        User user = contextProvider.getUser();
+        topicService.close(topicId, user);
+        return "redirect:/student/topics";
+    }
+
+
+    @PostMapping("/update/topic/open")
+    public String openTopic(@RequestParam(name = "topicId") long topicId){
+        User user = contextProvider.getUser();
+        topicService.open(topicId, user);
+        return "redirect:/student/topics";
+    }
 
     //working with comments
 

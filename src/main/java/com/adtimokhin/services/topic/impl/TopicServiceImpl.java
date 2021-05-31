@@ -3,6 +3,7 @@ package com.adtimokhin.services.topic.impl;
 import com.adtimokhin.enums.Role;
 import com.adtimokhin.models.topic.Topic;
 import com.adtimokhin.models.topic.TopicTag;
+import com.adtimokhin.models.user.User;
 import com.adtimokhin.repositories.topic.TopicRepository;
 import com.adtimokhin.security.ContextProvider;
 import com.adtimokhin.services.topic.TopicService;
@@ -50,6 +51,40 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
+    public void close(Topic topic) {
+        topic.setClosed(true);
+    }
+
+    @Override
+    public void close(long topicId, User user) {
+        Topic topic = getTopic(topicId);
+        if(topic == null){
+            return;
+        }
+        if(isUserCreatedTopic(topic, user)){
+            topic.setClosed(true);
+            topicRepository.save(topic);
+        }
+    }
+
+    @Override
+    public void open(Topic topic) {
+        topic.setClosed(false);
+    }
+
+    @Override
+    public void open(long topicId, User user) {
+        Topic topic = getTopic(topicId);
+        if(topic == null){
+            return;
+        }
+        if(isUserCreatedTopic(topic, user)){
+            topic.setClosed(false);
+            topicRepository.save(topic);
+        }
+    }
+
+    @Override
     public List<Topic> getAllTopics() {
         return topicRepository.findAll();
     }
@@ -85,6 +120,16 @@ public class TopicServiceImpl implements TopicService {
     public boolean isUserAllowedOntoTopic(Topic topic) { //Todo: maybe create a filter with this logic (when I will learn how they work)
         Set<Role> creatorRole = topic.getUser().getRoles();
         return creatorRole.contains(Role.ROLE_STUDENT);
+    }
+
+    @Override
+    public boolean isUserCreatedTopic(Topic topic, User user) {
+        return user.equals(topic.getUser());
+    }
+
+    @Override
+    public boolean isUserCreatedTopic(long topicId, User user) {
+        return topicRepository.getById(topicId).getUser().equals(user);
     }
 
 }

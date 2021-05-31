@@ -47,6 +47,9 @@ public class Topic {
     )
     private Set<TopicTag> tags;
 
+    @Column(name = "isClosed")
+    private boolean isClosed;
+
 
     public long getId() {
         return id;
@@ -94,5 +97,21 @@ public class Topic {
 
     public void setTags(Set<TopicTag> tags) {
         this.tags = tags;
+    }
+
+    public List<Report> getReports() {
+        return reports;
+    }
+
+    public void setReports(List<Report> reports) {
+        this.reports = reports;
+    }
+
+    public boolean isClosed() {
+        return isClosed;
+    }
+
+    public void setClosed(boolean closed) {
+        isClosed = closed;
     }
 }

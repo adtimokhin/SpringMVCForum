@@ -27,6 +27,9 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     public void addLike(User user, Comment comment) {
+        if(comment.getTopic().isClosed()){
+            return;
+        }
         Like like = new Like();
         like.setUser(user);
         like.setComment(comment);
@@ -40,6 +43,9 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     public void deleteLike(User user, Comment comment) {
+        if(comment.getTopic().isClosed()){
+            return;
+        }
         repository.deleteByUserAndComment(user , comment);
         commentService.decrementTotalLikes(comment);
     }

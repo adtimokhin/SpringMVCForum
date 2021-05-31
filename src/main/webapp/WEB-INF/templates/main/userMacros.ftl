@@ -62,14 +62,16 @@
     </html>
 </#macro>
 
-<#macro commentSection comments role="student">
+<#macro commentSection comments flaggable closed role="student">
     <table>
         <tr>
             <td>Comment left by:</td>
             <td></td>
             <td>Tags</td>
             <td></td>
-            <td></td>
+            <#if flaggable==true>
+                <td></td>
+            </#if>
         </tr>
         <#list comments as comment>
             <tr>
@@ -79,6 +81,7 @@
                 </td>
                 <td>
                     <#if likedComments?seq_index_of(comment.getId()) == -1>
+                        <#if closed == false>
                         <div>
                             <p>Not liked</p>
                             <form method="post" action="/${role}/add/like">
@@ -86,14 +89,17 @@
                                 <input type="submit" value="Like">
                             </form>
                         </div>
+                        </#if>
                     <#else>
                         <p>Liked</p>
-                        <div>
-                            <form method="post" action="/${role}/remove/like">
-                                <input hidden name="comment" value="${comment.getId()}">
-                                <input type="submit" value="Unlike">
-                            </form>
-                        </div>
+                        <#if closed == false>
+                            <div>
+                                <form method="post" action="/${role}/remove/like">
+                                    <input hidden name="comment" value="${comment.getId()}">
+                                    <input type="submit" value="Unlike">
+                                </form>
+                            </div>
+                        </#if>
                     </#if>
                     <div>
                         <form method="post" action="/${role}/add/report">
@@ -105,14 +111,18 @@
                         </form>
                     </div>
                 </td>
-                <td>
-                    <#if theCreator == true>
-                        <form method="post" action="/${role}/update/comment/flag">
-                            <input type="hidden" name="commentId" value="${comment.getId()}">
-                            <input type="submit" value="Flag">
-                        </form>
-                    </#if>
-                </td>
+                <#if closed == false>
+                <#if flaggable==true>
+                    <td>
+                        <#if theCreator == true>
+                            <form method="post" action="/${role}/update/comment/flag">
+                                <input type="hidden" name="commentId" value="${comment.getId()}">
+                                <input type="submit" value="Flag">
+                            </form>
+                        </#if>
+                    </td>
+                </#if>
+                </#if>
             </tr>
         </#list>
     </table>
@@ -125,7 +135,23 @@
     <body>
     <h1>This is a topic page.</h1>
     <p>If you see this message that means that you have entered a certain topic</p>
-
+    <#if theCreator == true>
+        <#if closed == true>
+            <div>
+                <form action="/${role}/update/topic/open" method="post">
+                    <input type="hidden" name="topicId" value="${topic.id}">
+                    <input type="submit" value="Open the discussion again.">
+                </form>
+            </div>
+            <#else>
+                <div>
+                    <form action="/${role}/update/topic/close" method="post">
+                        <input type="hidden" name="topicId" value="${topic.id}">
+                        <input type="submit" value="Close the discussion">
+                    </form>
+                </div>
+        </#if>
+    </#if>
     <div>
         <h3>${topic.topic}</h3>
         <p>${topic.description}</p>
@@ -150,25 +176,26 @@
         <h5>Comments</h5>
         <#if flaggedComments??>
             <p>Flagged Comments</p>
-            <@commentSection comments = flaggedComments role="${role}"></@commentSection>
+            <@commentSection comments = flaggedComments flaggable=false closed=closed role="${role}"></@commentSection>
             <p>All Comments:</p>
         </#if>
-        <@commentSection comments=comments role="${role}"></@commentSection>
+        <@commentSection comments=comments flaggable=true closed=closed role="${role}"></@commentSection>
     </div>
-
-    <div>
-        <form action="/${role}/add/comment" method="post">
-            <input type="text" name="msg">
-            <input hidden="hidden" value="${topic.getId()}" name="topicId">
-            <div>
-                <#list commentTags as tag>
-                    <input type="checkbox" id="${tag.getId()}" value="${tag.getId()}" name="tags">
-                    <label for="${tag.getId()}">${tag.getTagName()}</label>
-                </#list>
-            </div>
-            <input type="submit">
-        </form>
-    </div>
+    <#if closed==false>
+        <div>
+            <form action="/${role}/add/comment" method="post">
+                <input type="text" name="msg">
+                <input hidden="hidden" value="${topic.getId()}" name="topicId">
+                <div>
+                    <#list commentTags as tag>
+                        <input type="checkbox" id="${tag.getId()}" value="${tag.getId()}" name="tags">
+                        <label for="${tag.getId()}">${tag.getTagName()}</label>
+                    </#list>
+                </div>
+                <input type="submit">
+            </form>
+        </div>
+    </#if>
     </body>
     </html>
 </#macro>

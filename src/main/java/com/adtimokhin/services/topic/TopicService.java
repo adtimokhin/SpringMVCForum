@@ -2,6 +2,7 @@ package com.adtimokhin.services.topic;
 
 import com.adtimokhin.models.topic.Topic;
 import com.adtimokhin.models.topic.TopicTag;
+import com.adtimokhin.models.user.User;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,14 @@ public interface TopicService {
 
     void addTopic(Topic topic, Set<TopicTag> tags);
 
+    void close(Topic topic);
+
+    void close(long topicId, User user);
+
+    void open(Topic topic);
+
+    void open(long topicId, User user);
+
     List<Topic> getAllTopics();
 
     @Nullable
@@ -31,4 +40,8 @@ public interface TopicService {
     void setTags(Topic topic, String... tags);
 
     boolean isUserAllowedOntoTopic(Topic topic);
+
+    boolean isUserCreatedTopic(Topic topic, User user);
+
+    boolean isUserCreatedTopic(long topicId, User user);
 }
