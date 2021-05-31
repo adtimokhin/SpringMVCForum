@@ -35,30 +35,39 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //TODO: Add an automatic login after the sign up.
+        //TODO: Add an automatic login after the email was verified.
         http.authorizeRequests()
-                .antMatchers("/forum" , "/defaultSuccessUrl").authenticated()
-                .antMatchers("/login", "/sign_up").anonymous()
+                .antMatchers("/forum", "/defaultSuccessUrl", "/logout").authenticated()
+                .antMatchers("/sign_up").anonymous()
                 .antMatchers("/admin/*").hasRole(Role.ROLE_ADMIN.getRole())
                 .antMatchers("/student/*").hasRole(Role.ROLE_STUDENT.getRole())
                 .antMatchers("/parent/*").hasRole(Role.ROLE_PARENT.getRole())
-                .antMatchers("/*" , "/").permitAll()
-                .and().csrf().disable()
-                .formLogin().loginPage("/login").loginProcessingUrl("/login/process")
-                .usernameParameter("email")
-                .passwordParameter("password")
-                .failureUrl("/login?error=true")
-                .defaultSuccessUrl("/defaultSuccessUrl" , true)
+                .antMatchers("/*", "/", "/login").permitAll()
                 .and()
-                .exceptionHandling()
-                .accessDeniedPage("/error/404")
+                .csrf()
+                    .disable()
+                .formLogin()
+                    .loginPage("/login")
+                        .loginProcessingUrl("/login/process")
+                        .usernameParameter("email")
+                        .passwordParameter("password")
+                    .failureUrl("/login?error=true")
+                    .defaultSuccessUrl("/defaultSuccessUrl", true)
                 .and()
-                .logout().logoutUrl("/logout").logoutSuccessUrl("/login");
+                    .exceptionHandling()
+                        .accessDeniedPage("/error/404")
+                .and()
+                .logout()
+                    .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
+                .and()
+                .rememberMe();
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) {
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authProvider);
+        auth.userDetailsService(userDetailsService);
     }
 
     @Bean

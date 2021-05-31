@@ -44,7 +44,7 @@ public class AuthProvider implements AuthenticationProvider {
             throw new BadCredentialsException("Wrong password has been entered");
         }
 
-        return new UsernamePasswordAuthenticationToken(user, null, user.getRoles());
+        return new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(), user.getRoles());
 
     }
 

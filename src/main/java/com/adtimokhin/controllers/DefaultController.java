@@ -1,8 +1,6 @@
 package com.adtimokhin.controllers;
 
 import com.adtimokhin.enums.Role;
-import com.adtimokhin.services.user.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 

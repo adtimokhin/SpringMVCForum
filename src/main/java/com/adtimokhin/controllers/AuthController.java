@@ -5,13 +5,16 @@ import com.adtimokhin.models.user.User;
 import com.adtimokhin.services.user.UserService;
 import com.adtimokhin.utils.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 
 /**
@@ -30,12 +33,23 @@ public class AuthController {
 
     private static final String ERROR_ATTRIBUTE = "errors";
 
-    @RequestMapping("/login")
-    public String getSignIn(@RequestParam(value = "error", required = false) Boolean error, Model model) {
-        //Todo: когда юзер заблокирован, он все равно получает это же сообщение. Сообщение для заблокированных юзеров
-        // должно быть иним
+    @GetMapping("/login")
+    public String getLogin(@RequestParam(value = "error", required = false) Boolean error,
+                            HttpServletRequest request, Model model) {
         if (Boolean.TRUE.equals(error)) {
-            model.addAttribute("error", true);
+            try {
+                AuthenticationException authenticationException =
+                        (AuthenticationException) request.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+                if (authenticationException.getClass().equals(LockedException.class)){
+                    model.addAttribute("error" , "User banned");
+                }
+                else {
+                    model.addAttribute("error" , "Bad credentials");
+                }
+            }catch (Exception e){
+                model.addAttribute("error" , "Error occurred");
+            }
+
         }
         return "auth/signIn";
     }
@@ -68,6 +82,5 @@ public class AuthController {
 
         return "index";
     }
-
 
 }

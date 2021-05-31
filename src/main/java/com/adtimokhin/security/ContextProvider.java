@@ -17,9 +17,12 @@ public class ContextProvider {
     @Autowired
     private UserService userService;
 
-    private static SecurityContext getSecurityContext(){return SecurityContextHolder.getContext();}
+    private static SecurityContext getSecurityContext() {
+        return SecurityContextHolder.getContext();
+    }
 
-    public User getUser(){//Todo: Separate this gigantic line of code and make checks
-      return (User) getSecurityContext().getAuthentication().getPrincipal();
+    public User getUser() {
+        String email = (String) getSecurityContext().getAuthentication().getPrincipal();
+        return userService.getUser(email);
     }
 }
