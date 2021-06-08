@@ -41,7 +41,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/sign_up").anonymous()
                 .antMatchers("/admin/*").hasRole(Role.ROLE_ADMIN.getRole())
                 .antMatchers("/student/*").hasRole(Role.ROLE_STUDENT.getRole())
-                .antMatchers("/parent/*").hasRole(Role.ROLE_PARENT.getRole())
+//                .antMatchers("/parent/*").hasRole(Role.ROLE_PARENT.getRole())
+                .antMatchers("/parent/*").hasAnyRole(Role.ROLE_PARENT.getRole() ,
+                                                            Role.ROLE_ORGANIZATION_MEMBER.getRole())
                 .antMatchers("/*", "/", "/login").permitAll()
                 .and()
                 .csrf()

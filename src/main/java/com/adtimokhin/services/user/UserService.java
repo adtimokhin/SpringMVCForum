@@ -19,7 +19,11 @@ public interface UserService {
 
     User getUser(long id);
 
+    @Transactional
     void addUser(User user, Role... roles);
+
+    @Transactional
+    void addOrganizationMember(User user, String tokenValue);
 
     void assignUserFullName(User user);
 

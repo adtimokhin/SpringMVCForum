@@ -161,6 +161,30 @@ public class User {
         this.banned = banned;
     }
 
+    public List<Report> getReportsForUser() {
+        return reportsForUser;
+    }
+
+    public void setReportsForUser(List<Report> reportsForUser) {
+        this.reportsForUser = reportsForUser;
+    }
+
+    public List<Report> getReportsByUser() {
+        return reportsByUser;
+    }
+
+    public void setReportsByUser(List<Report> reportsByUser) {
+        this.reportsByUser = reportsByUser;
+    }
+
+    public Token getToken() {
+        return token;
+    }
+
+    public void setToken(Token token) {
+        this.token = token;
+    }
+
     @Override
     public boolean equals(Object obj) {
         return ((User) this).getId() == ((User) obj).getId();

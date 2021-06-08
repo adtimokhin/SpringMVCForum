@@ -2,6 +2,8 @@ package com.adtimokhin.services.company.impl;
 
 import com.adtimokhin.models.company.Company;
 import com.adtimokhin.models.company.Token;
+import com.adtimokhin.models.user.User;
+import com.adtimokhin.repositories.company.CompanyRepository;
 import com.adtimokhin.repositories.company.TokenRepository;
 import com.adtimokhin.services.company.TokenService;
 import com.adtimokhin.utils.TokenGenerator;
@@ -24,6 +26,9 @@ public class TokenServiceImpl implements TokenService {
 
     @Autowired
     private TokenGenerator tokenGenerator;
+
+    @Autowired
+    private CompanyRepository companyRepository;
 
     @Override
     public void safe(String token, Company company) {
@@ -51,5 +56,17 @@ public class TokenServiceImpl implements TokenService {
                 tok) {
             safe(t, company);
         }
+    }
+
+    @Override
+    public Token getToken(String tokenValue) {
+        return repository.getByTokenValue(tokenValue);
+    }
+
+    @Override
+    public void setUser(Token token, User user) {
+        token.setUser(user);
+        companyRepository.save(token.getCompany());
+        repository.save(token);
     }
 }

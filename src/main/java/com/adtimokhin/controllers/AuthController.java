@@ -3,7 +3,7 @@ package com.adtimokhin.controllers;
 import com.adtimokhin.enums.Role;
 import com.adtimokhin.models.user.User;
 import com.adtimokhin.services.user.UserService;
-import com.adtimokhin.utils.UserValidator;
+import com.adtimokhin.utils.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;

@@ -82,7 +82,10 @@ public class CompanyServiceImpl implements CompanyService {
         return repository.getAllByVerifiedIs(true);
     }
 
-
+    @Override
+    public Company getByPhone(String phone) {
+        return repository.findByPhone(phone);
+    }
 
 
 }

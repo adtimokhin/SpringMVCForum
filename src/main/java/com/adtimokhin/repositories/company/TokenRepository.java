@@ -18,4 +18,6 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
     List<Token> getAllByCompany(Company company);
 
     Token getFirstByCompany(Company company);
+
+    Token getByTokenValue(String tokenValue);
 }

@@ -1,10 +1,12 @@
 package com.adtimokhin.services.user.impl;
 
 import com.adtimokhin.enums.Role;
+import com.adtimokhin.models.company.Token;
 import com.adtimokhin.models.user.User;
 import com.adtimokhin.repositories.user.UserNameRepository;
 import com.adtimokhin.repositories.user.UserRepository;
 import com.adtimokhin.repositories.user.UserSurnameRepository;
+import com.adtimokhin.services.company.TokenService;
 import com.adtimokhin.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,6 +40,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserSurnameRepository userSurnameRepository;
 
+    @Autowired
+    private TokenService tokenService;
+
 
     private Random random = new Random();
 
@@ -59,6 +64,15 @@ public class UserServiceImpl implements UserService {
         assignUserFullName(user);
         repository.save(user);
 
+    }
+
+    @Override
+    public void addOrganizationMember(User user, String tokenValue) {
+        Token token = tokenService.getToken(tokenValue);
+        user.setToken(token);
+        addUser(user, Role.ROLE_ORGANIZATION_MEMBER);
+
+        tokenService.setUser(token, user);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.adtimokhin.utils;
+package com.adtimokhin.utils.validator;
 
 import com.adtimokhin.enums.Role;
 import com.adtimokhin.services.user.UserService;
@@ -29,7 +29,7 @@ public class UserValidator {
         if (!isEmailValid(email)) {
             errors.add("Your email is in invalid form!");
         }
-        // User should deal with typo mistakes first and only then should be tested for the validity of their inout.
+        // User should deal with typo mistakes first and only then should be tested for the validity of their input.
         if (errors.size() != 0) {
             return errors;
         }

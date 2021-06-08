@@ -29,4 +29,6 @@ public interface CompanyService {
 
     List<Company> getAllVerifiedCompanies();
 
+    Company getByPhone(String phone);
+
 }

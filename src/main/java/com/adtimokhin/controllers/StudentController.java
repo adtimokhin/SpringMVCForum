@@ -9,7 +9,7 @@ import com.adtimokhin.services.comment.impl.CommentTagsServiceImpl;
 import com.adtimokhin.services.like.LikeService;
 import com.adtimokhin.services.report.ReportService;
 import com.adtimokhin.services.topic.TopicService;
-import com.adtimokhin.utils.TopicValidator;
+import com.adtimokhin.utils.validator.TopicValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

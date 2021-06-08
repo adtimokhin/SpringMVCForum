@@ -18,5 +18,6 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 
     List<Company> getAllByVerifiedIs(boolean verified);
 
+    Company findByPhone(String phone);
 
 }

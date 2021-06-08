@@ -1,4 +1,4 @@
-package com.adtimokhin.utils;
+package com.adtimokhin.utils.validator;
 
 import com.adtimokhin.models.topic.Topic;
 import org.springframework.stereotype.Component;
