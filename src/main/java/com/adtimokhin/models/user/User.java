@@ -2,6 +2,7 @@ package com.adtimokhin.models.user;
 
 import com.adtimokhin.enums.Role;
 import com.adtimokhin.models.comment.Comment;
+import com.adtimokhin.models.company.Token;
 import com.adtimokhin.models.like.Like;
 import com.adtimokhin.models.report.Report;
 import com.adtimokhin.models.topic.Topic;
@@ -66,6 +67,8 @@ public class User {
     @OneToMany(mappedBy = "reportingUser")
     private List<Report> reportsByUser;
 
+    @OneToOne(mappedBy = "user")
+    private Token token;
 
     // constructors
     public User() {

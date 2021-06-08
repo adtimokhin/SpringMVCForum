@@ -5,6 +5,7 @@ import com.adtimokhin.models.company.Company;
 import com.adtimokhin.models.user.User;
 import com.adtimokhin.repositories.company.CompanyRepository;
 import com.adtimokhin.services.company.CompanyService;
+import com.adtimokhin.services.company.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,11 @@ import java.util.List;
 public class CompanyServiceImpl implements CompanyService {
     @Autowired
     private CompanyRepository repository;
+
+
+
+    @Autowired
+    private TokenService tokenService;
 
     @Override
     public void addCompany(Company company) {
@@ -56,9 +62,9 @@ public class CompanyServiceImpl implements CompanyService {
             return;
         }
 
+        tokenService.generateTokens(company);
         company.setVerified(true);
         repository.save(company);
-        generateTokens(company);
     }
 
     @Override
@@ -68,15 +74,15 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public List<Company> getAllPendingCompanies() {
-        return repository.getAllByVerifiedIsFalse();
+        return repository.getAllByVerifiedIs(false);
     }
 
     @Override
-    public void generateTokens(Company company) {
-        if (!company.isVerified()){
-            return;
-        }
-
-
+    public List<Company> getAllVerifiedCompanies() {
+        return repository.getAllByVerifiedIs(true);
     }
+
+
+
+
 }

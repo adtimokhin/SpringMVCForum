@@ -27,6 +27,6 @@ public interface CompanyService {
 
     List<Company> getAllPendingCompanies();
 
-    void generateTokens(Company company);
+    List<Company> getAllVerifiedCompanies();
 
 }

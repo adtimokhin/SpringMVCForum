@@ -1,6 +1,7 @@
 package com.adtimokhin.repositories.company;
 
 import com.adtimokhin.models.company.Company;
+import com.adtimokhin.models.company.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,11 +13,9 @@ import java.util.List;
  **/
 
 @Repository
-public interface CompanyRepository extends JpaRepository<Company, Long> {
+public interface TokenRepository extends JpaRepository<Token, Long> {
 
-    Company findById(long id);
+    List<Token> getAllByCompany(Company company);
 
-    List<Company> getAllByVerifiedIs(boolean verified);
-
-
+    Token getFirstByCompany(Company company);
 }
