@@ -1,6 +1,7 @@
 package com.adtimokhin.controllers;
 
 import com.adtimokhin.enums.Role;
+import com.adtimokhin.models.company.Company;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 

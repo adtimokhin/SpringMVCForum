@@ -26,9 +26,6 @@ public class Topic {
 
     private String description;
 
-//    @Column(name = "user_id")
-//    private long userId;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

@@ -26,6 +26,7 @@
     <spring.version>5.3.5</spring.version>
     <aspectj.version>1.9.1</aspectj.version>
     <slf4j.version>1.7.30</slf4j.version>
+    <log4j.version>2.14.1</log4j.version>
   </properties>
 
   <dependencies>
@@ -145,6 +146,19 @@
       <artifactId>slf4j-simple</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
+<!--    Log4j dependencies-->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+
+
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
@@ -156,6 +170,16 @@
       <version>19.0.0</version>
       <scope>compile</scope>
     </dependency>
+
+
+    <!--lombok -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.20</version>
+      <scope>provided</scope>
+    </dependency>
+
 
 
   </dependencies>

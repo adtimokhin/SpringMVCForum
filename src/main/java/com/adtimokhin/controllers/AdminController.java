@@ -1,14 +1,18 @@
 package com.adtimokhin.controllers;
 
 import com.adtimokhin.models.comment.Comment;
+import com.adtimokhin.models.company.Company;
 import com.adtimokhin.models.report.Report;
 import com.adtimokhin.security.ContextProvider;
+import com.adtimokhin.services.company.CompanyService;
 import com.adtimokhin.services.report.ReportService;
 import com.adtimokhin.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author adtimokhin
@@ -25,6 +29,9 @@ public class AdminController {
 
     @Autowired
     private ReportService reportService;
+
+    @Autowired
+    private CompanyService companyService;
 
     @Autowired
     private ContextProvider contextProvider;
@@ -80,6 +87,32 @@ public class AdminController {
     @PostMapping("/update/unblock/user")
     public String unBanUser(@RequestParam(name = "userId") long id){
         reportService.unBanUser(userService.getUser(id) , contextProvider.getUser());
+        return "redirect:/admin/home";
+    }
+
+
+    @GetMapping("get/companies")
+    public String getCompanies(Model model){
+        List<Company> companies = companyService.getAllCompanies();
+        model.addAttribute("companies" , companies);
+        model.addAttribute("verifiable" , false);
+
+        return "admin/companies";
+    }
+
+    @GetMapping("get/companies/pending")
+    public String getCompaniesPending(Model model){
+        List<Company> companies = companyService.getAllPendingCompanies();
+        model.addAttribute("companies" , companies);
+        model.addAttribute("verifiable" , true);
+
+        return "admin/companies";
+
+    }
+
+    @PostMapping("verify/company")
+    public String verifyCompany(@RequestParam(name = "id") long id){
+        companyService.verify(contextProvider.getUser(), id);
         return "redirect:/admin/home";
     }
 }

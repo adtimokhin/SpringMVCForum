@@ -11,6 +11,7 @@ public enum Role implements GrantedAuthority {
 
     ROLE_STUDENT,
     ROLE_PARENT,
+    ROLE_COMPANY_REPRESETITVE,
     ROLE_ADMIN;
 
     @Override
