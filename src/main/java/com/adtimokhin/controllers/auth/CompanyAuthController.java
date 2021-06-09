@@ -1,4 +1,4 @@
-package com.adtimokhin.controllers;
+package com.adtimokhin.controllers.auth;
 
 import com.adtimokhin.models.user.User;
 import com.adtimokhin.services.company.CompanyService;

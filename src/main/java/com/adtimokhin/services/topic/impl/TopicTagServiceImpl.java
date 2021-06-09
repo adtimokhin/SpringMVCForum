@@ -19,45 +19,45 @@ import java.util.stream.Collectors;
 
 @Component
 public class TopicTagServiceImpl implements TopicTagService {
-
+    //Repositories
     @Autowired
-    private TopicTagRepository tagRepository;
+    private TopicTagRepository repository;
 
     @Override
     public void addTag(String tag) {
         TopicTag topicTag = new TopicTag();
         topicTag.setTagName(tag.toUpperCase());
-        tagRepository.save(topicTag);
+        repository.save(topicTag);
     }
 
     @Override
     public void deleteTag(TopicTag tag) {
-        tagRepository.delete(tag);
+        repository.delete(tag);
     }
 
     @Override
     public void deleteTag(String tag) {
-        tagRepository.delete(getTagByName(tag));
+        repository.delete(getTagByName(tag));
     }
 
     @Override
     public TopicTag getTagByName(String name) {
-        return tagRepository.findByTagName(name);
+        return repository.findByTagName(name);
     }
 
     @Override
     public TopicTag getTagById(long id) {
-        return tagRepository.findById(id);
+        return repository.findById(id);
     }
 
     @Override
     public Set<TopicTag> getTagsByNames(String... names) {
         List<String> listNames = Arrays.stream(names).map(String::toUpperCase).collect(Collectors.toList());
-        return new HashSet<>(tagRepository.findAllByTagNameIn(listNames));
+        return new HashSet<>(repository.findAllByTagNameIn(listNames));
     }
 
     @Override
     public boolean tagExists(String tagName) {
-        return tagRepository.existsByTagName(tagName.toUpperCase());
+        return repository.existsByTagName(tagName.toUpperCase());
     }
 }

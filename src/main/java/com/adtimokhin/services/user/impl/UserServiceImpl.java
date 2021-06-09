@@ -24,15 +24,9 @@ import java.util.Random;
 
 @Component
 public class UserServiceImpl implements UserService {
-
-    private final UserRepository repository;
-
-    public UserServiceImpl(UserRepository repository) {
-        this.repository = repository;
-    }
-
+    //Repositories
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private  UserRepository repository;
 
     @Autowired
     private UserNameRepository userNameRepository;
@@ -40,9 +34,14 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserSurnameRepository userSurnameRepository;
 
+
+    //Services
     @Autowired
     private TokenService tokenService;
 
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private Random random = new Random();
 

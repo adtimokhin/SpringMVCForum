@@ -1,4 +1,4 @@
-package com.adtimokhin.controllers;
+package com.adtimokhin.controllers.main;
 
 import com.adtimokhin.models.comment.Comment;
 import com.adtimokhin.models.topic.Topic;
@@ -22,10 +22,9 @@ import java.util.List;
  * @author adtimokhin
  * 22.04.2021
  **/
-
 @Controller
-@RequestMapping("student")
-public class StudentController {
+@RequestMapping("parent")
+public class ParentController {
 
     @Autowired
     private TopicService topicService;
@@ -43,16 +42,15 @@ public class StudentController {
     private ReportService reportService;
 
     @Autowired
-    private ContextProvider contextProvider;
-
-    @Autowired
     private CommentTagsServiceImpl tagsService;
 
+    @Autowired
+    private ContextProvider contextProvider;
 
     @GetMapping("/topics")
     public String getAllTopics(Model model) {
-        model.addAttribute("topics", topicService.getAllTopicsForStudents());
-        return "/student/studentForumPage";
+        model.addAttribute("topics", topicService.getAllTopics());
+        return "/parent/parentForumPage";
     }
 
     @GetMapping("/topic/{id}")
@@ -60,15 +58,12 @@ public class StudentController {
         Topic topic = topicService.getTopic(id);
         if (topic == null) {
             // TODO: throw a 404 error
-            return "redirect:/student/topics";
-        }
-        if (!topicService.isUserAllowedOntoTopic(topic)) {
-            return "redirect:/student/topics";//Todo:redirect to some error page (access denied page, e.g.)
+            return "redirect:/parent/topics";
         }
         List<Comment> comments = commentService.getAllCommentsByTopic(id);
-        List<Comment> flaggedComments = commentService.getFlagged(comments);
-        if (flaggedComments != null){
-            model.addAttribute("flaggedComments" , flaggedComments);
+        List<Comment> flaggedComments = commentService.getFlaggedComment(comments);
+        if (flaggedComments != null) {
+            model.addAttribute("flaggedComments", flaggedComments);
         }
         User u = contextProvider.getUser();
         List<Long> likedCommentIds = likeService.getAllLikedCommentIdsByUser(u, comments);
@@ -78,7 +73,7 @@ public class StudentController {
         model.addAttribute("commentTags", tagsService.getAllCommentTags());
 
         //some special functionality is only available to a user that have initiated the topic.
-        // We need to check if a user that gets the view is the same user that have created the topic
+        // We need to check if a user that gets the view is the same user that have created the topic.
         if(topicService.isUserCreatedTopic(topic, u)){
             model.addAttribute("theCreator" , true);
         }else {
@@ -90,46 +85,42 @@ public class StudentController {
         }else {
             model.addAttribute("closed" , false);
         }
-        return "/student/studentTopicPage";
+
+
+        return "/parent/parentTopicPage";
     }
 
 
-    //working with topics
-
-    //adding a new topic
     @GetMapping("/add/topic")
     public String studentAddTopic(Model model) {
         model.addAttribute("topic", new Topic());
-        return "/student/studentNewTopicPage";
+        return "/parent/parentNewTopicPage";
     }
 
     @PostMapping("/add/topic")
     public String studentAddTopic(@ModelAttribute Topic topic, BindingResult result) {
         topicValidator.validate(topic, result);
         if (result.hasErrors()) {
-            return "/student/studentNewTopicPage";
+            return "/parent/parentNewTopicPage";
         }
         topicService.addTopic(topic);
-        return "redirect:/student/topics";
+        return "redirect:/parent/topics";
 
     }
 
     @PostMapping("/update/topic/close")
     public String closeTopic(@RequestParam(name = "topicId") long topicId){
         User user = contextProvider.getUser();
-        topicService.close(topicId, user);
-        return "redirect:/student/topics";
+        topicService.closeTopic(topicId, user);
+        return "redirect:/parent/topics";
     }
-
 
     @PostMapping("/update/topic/open")
     public String openTopic(@RequestParam(name = "topicId") long topicId){
         User user = contextProvider.getUser();
-        topicService.open(topicId, user);
-        return "redirect:/student/topics";
+        topicService.openTopic(topicId, user);
+        return "redirect:/parent/topics";
     }
-
-    //working with comments
 
     //adding a new comment
     @PostMapping("/add/comment")
@@ -137,33 +128,29 @@ public class StudentController {
                                     @RequestParam(name = "topicId") long topicId,
                                     @RequestParam(name = "tags", required = false) List<Long> tags) {
 
-        if (!topicService.isUserAllowedOntoTopic(topicService.getTopic(topicId))) {
-            return "redirect:/student/topics"; //Todo:redirect to some error page (access denied page, e.g.)
-        }
-
         commentService.addComment(msg, topicId, tags);
-        return "redirect:/student/topic/" + topicId;
+        return "redirect:/parent/topic/" + topicId;
     }
 
     @PostMapping("/update/comment/flag")
     public String flagComment(@RequestParam(name = "commentId") long commentId){
         commentService.flagComment(commentId, contextProvider.getUser());
-        return "redirect:/student/topics";
+        return "redirect:/parent/topics";
     }
-    // add a like to a comment
+
     @PostMapping("/add/like")
-    public String studentAddLike(@RequestParam(name = "comment") long commentId) {
-        Comment comment = commentService.getCommentById(commentId); // Todo: это обращение к бд - ненужное и зря нагружает систему. Нужно это как-то пофиксить
+    public String parentAddLike(@RequestParam(name = "comment") long commentId) {
+        Comment comment = commentService.getCommentById(commentId);// Todo: это обращение к бд - ненужное и зря нагружает систему. Нужно это как-то пофиксить
         likeService.addLike(contextProvider.getUser(), comment);
-        return "redirect:/student/topics";
+        return "redirect:/parent/topics";
     }
 
     // removing a like from a comment
     @PostMapping("/remove/like")
-    public String studentRemoveLike(@RequestParam(name = "comment") long commentId) {
+    public String parentRemoveLike(@RequestParam(name = "comment") long commentId) {
         Comment comment = commentService.getCommentById(commentId); // Todo: это обращение к бд - ненужное и зря нагружает систему. Нужно это как-то пофиксить
         likeService.deleteLike(contextProvider.getUser(), comment);
-        return "redirect:/student/topics";
+        return "redirect:/parent/topics";
     }
 
     // working with reports and bans
@@ -173,9 +160,8 @@ public class StudentController {
             @RequestParam(name = "isComment") Boolean isComment,
             @RequestParam(name = "reportedUserId") long reportedUserId,
             @RequestParam(name = "causeId") long causeId
-    ){
-
-        reportService.addReport(commentOrTopicId , isComment, reportedUserId, contextProvider.getUser().getId(), causeId);
-        return "redirect:/student/topics";
+    ) {
+        reportService.addReport(commentOrTopicId, isComment, reportedUserId, contextProvider.getUser().getId(), causeId);
+        return "redirect:/parent/topics";
     }
 }

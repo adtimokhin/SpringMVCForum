@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 public interface TokenService {
 
-    void safe(String token, Company company);
+    void addToken(String token, Company company);
 
     Token getSampleToken(Company company);
 

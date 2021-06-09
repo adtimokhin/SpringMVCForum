@@ -32,10 +32,10 @@ public interface CommentService {
 
     List<String> getTagNames(Comment comment);
 
-    List<Comment> getFlagged(long topicId);
+    List<Comment> getFlaggedComment(long topicId);
 
     @Nullable
-    List<Comment> getFlagged(List<Comment> comments);
+    List<Comment> getFlaggedComment(List<Comment> comments);
 
     void flagComment(long id, User user);
 }

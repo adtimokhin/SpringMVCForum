@@ -21,7 +21,7 @@ public interface CompanyService {
     void addCompany(String name, String url, String email, String phone, String location, int tokens);
 
     @Transactional
-    void verify(User admin,long id);
+    void verifyCompany(User admin, long id);
 
     List<Company> getAllCompanies();
 
@@ -29,6 +29,6 @@ public interface CompanyService {
 
     List<Company> getAllVerifiedCompanies();
 
-    Company getByPhone(String phone);
+    Company getCompanyByPhone(String phone);
 
 }

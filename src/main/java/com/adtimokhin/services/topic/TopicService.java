@@ -22,13 +22,13 @@ public interface TopicService {
 
     void addTopic(Topic topic, Set<TopicTag> tags);
 
-    void close(Topic topic);
+    void closeTopic(Topic topic);
 
-    void close(long topicId, User user);
+    void closeTopic(long topicId, User user);
 
-    void open(Topic topic);
+    void openTopic(Topic topic);
 
-    void open(long topicId, User user);
+    void openTopic(long topicId, User user);
 
     List<Topic> getAllTopics();
 

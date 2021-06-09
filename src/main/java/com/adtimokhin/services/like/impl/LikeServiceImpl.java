@@ -19,9 +19,13 @@ import java.util.stream.Collectors;
 
 @Component
 public class LikeServiceImpl implements LikeService {
+
+    //Repositories
     @Autowired
     private LikeRepository repository;
 
+
+    //Services
     @Autowired
     private CommentService commentService;
 

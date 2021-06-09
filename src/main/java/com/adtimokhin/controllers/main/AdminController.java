@@ -1,4 +1,4 @@
-package com.adtimokhin.controllers;
+package com.adtimokhin.controllers.main;
 
 import com.adtimokhin.models.comment.Comment;
 import com.adtimokhin.models.company.Company;
@@ -49,13 +49,13 @@ public class AdminController {
 
     @GetMapping("get/reports")
     public String getReports(Model model) {
-        model.addAttribute("reports", reportService.getAll()); //Todo: не отображаются корректно репорты, потому что, мы всегда считаем, что все репорты ссылаются на комментарий, а не на топик. Нужно фиксить, дружище.
+        model.addAttribute("reports", reportService.getAllReports()); //Todo: не отображаются корректно репорты, потому что, мы всегда считаем, что все репорты ссылаются на комментарий, а не на топик. Нужно фиксить, дружище.
         return "admin/reports";
     }
 
     @GetMapping("get/report/{id}")
     public String getReport(Model model, @PathVariable(name = "id") long reportId) {
-        Report report = reportService.getById(reportId);
+        Report report = reportService.getReportById(reportId);
         if (report == null) {
             // Todo: throw some exception
             return "redirect:admin/home";
@@ -79,7 +79,7 @@ public class AdminController {
     @PostMapping("/update/block/user")
     public String banUser(@RequestParam(name = "reason") String reason,
                           @RequestParam(name = "reportId") long reportId){
-        reportService.banUser(reportService.getById(reportId) , reason ,contextProvider.getUser());
+        reportService.banUser(reportService.getReportById(reportId) , reason ,contextProvider.getUser());
         return "redirect:/admin/home";
 
     }
@@ -112,7 +112,7 @@ public class AdminController {
 
     @PostMapping("verify/company")
     public String verifyCompany(@RequestParam(name = "id") long id){
-        companyService.verify(contextProvider.getUser(), id);
+        companyService.verifyCompany(contextProvider.getUser(), id);
         return "redirect:/admin/home";
     }
 }

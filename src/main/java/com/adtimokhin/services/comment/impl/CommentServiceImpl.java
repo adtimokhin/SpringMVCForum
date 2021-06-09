@@ -23,17 +23,22 @@ import java.util.stream.Collectors;
 @Component
 public class CommentServiceImpl implements CommentService {
 
+    //Repositories
     @Autowired
-    private CommentRepository commentRepository;
+    private CommentRepository repository;
 
+
+    //Services
     @Autowired
     private CommentTagsServiceImpl tagsService;
 
     @Autowired
-    private ContextProvider contextProvider;
+    private TopicService topicService;
+
 
     @Autowired
-    private TopicService topicService;
+    private ContextProvider contextProvider;
+
 
 
     @Override
@@ -57,7 +62,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void deleteComment(Comment comment) {
-        commentRepository.delete(comment);
+        repository.delete(comment);
     }
 
     @Override
@@ -67,31 +72,31 @@ public class CommentServiceImpl implements CommentService {
             //TODO: when logging will be added, this kind of issue should be logged.
             return null;
         }
-        return commentRepository.getAllByTopicOrderByTotalLikesDesc(topic);
+        return repository.getAllByTopicOrderByTotalLikesDesc(topic);
 
     }
 
     @Override
     public Comment getCommentById(long id) {
-        return commentRepository.getById(id);
+        return repository.getById(id);
     }
 
     @Override
     public void incrementTotalLikes(Comment comment) {
         comment.setTotalLikes(comment.getTotalLikes() + 1);
-        commentRepository.save(comment);
+        repository.save(comment);
     }
 
     @Override
     public void decrementTotalLikes(Comment comment) {
         comment.setTotalLikes(comment.getTotalLikes() - 1);
-        commentRepository.save(comment);
+        repository.save(comment);
     }
 
     @Override
     public void setTags(Comment comment, List<Long> tagIds) {
         comment.setTags(tagsService.getCommentTagsByIds(tagIds));
-        commentRepository.save(comment);
+        repository.save(comment);
     }
 
     @Override
@@ -100,12 +105,12 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<Comment> getFlagged(long topicId) {
+    public List<Comment> getFlaggedComment(long topicId) {
         return null;
     }
 
     @Override
-    public List<Comment> getFlagged(List<Comment> comments) {
+    public List<Comment> getFlaggedComment(List<Comment> comments) {
         List<Comment> c = new ArrayList<>();
         for (Comment comment:
              comments) {
@@ -125,7 +130,7 @@ public class CommentServiceImpl implements CommentService {
         }
         if(comment.getTopic().getUser().equals(user)){
             comment.setFlagged(true);
-            commentRepository.save(comment);
+            repository.save(comment);
         }
     }
 

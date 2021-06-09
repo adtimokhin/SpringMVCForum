@@ -14,13 +14,13 @@ import java.util.List;
 @Service
 public interface ReportService {
 
-    List<Report> getAll();
+    List<Report> getAllReports();
 
-    Report getById(long id);
+    Report getReportById(long id);
 
-    List<Report> getAllByReportedUser(User user);
+    List<Report> getAllReportsByReportedUser(User user);
 
-    List<Report> getAllByReportedUser(long id);
+    List<Report> getAllReportsByReportedUser(long id);
 
     void addReport(long commentOrTopicId, boolean isComment , long reportedUserId, long reportingUserId, long causeId);
 

@@ -21,14 +21,15 @@ import java.util.List;
 
 @Component
 public class ReportServiceImpl implements ReportService {
-
+    //Repositories
     @Autowired
-    private ReportRepository reportRepository;
+    private ReportRepository repository;
 
     @Autowired
     private CauseRepository causeRepository;
 
 
+    //Services
     @Autowired
     private UserService userService;
 
@@ -40,23 +41,23 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
-    public List<Report> getAll() {
-        return reportRepository.findAll();
+    public List<Report> getAllReports() {
+        return repository.findAll();
     }
 
     @Override
-    public Report getById(long id) {
-        return reportRepository.findById(id);
+    public Report getReportById(long id) {
+        return repository.findById(id);
     }
 
     @Override
-    public List<Report> getAllByReportedUser(User user) {
-        return reportRepository.findAllByReportedUser(user);
+    public List<Report> getAllReportsByReportedUser(User user) {
+        return repository.findAllByReportedUser(user);
     }
 
     @Override
-    public List<Report> getAllByReportedUser(long id) {
-        return reportRepository.findAllByReportedUser(userService.getUser(id));
+    public List<Report> getAllReportsByReportedUser(long id) {
+        return repository.findAllByReportedUser(userService.getUser(id));
     }
 
     @Override
@@ -74,14 +75,14 @@ public class ReportServiceImpl implements ReportService {
         report.setReportingUser(userService.getUser(reportingUserId));
         report.setCause(causeRepository.findById(causeId));
 
-        reportRepository.save(report);
+        repository.save(report);
     }
 
     @Override
     public void banUser(Report report, String reason, User admin) {
         if (admin.getRoles().contains(Role.ROLE_ADMIN)){
             userService.banUser(report.getReportedUser());
-            reportRepository.delete(report);
+            repository.delete(report);
         }
     }
 

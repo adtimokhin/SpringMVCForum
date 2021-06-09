@@ -41,7 +41,7 @@ public class OrganizationMemberValidator {
     ArrayList<String> validate(String firstName, String lastName, String email, String password, String secondPassword, String phone, String tokenValue) {
 
         ArrayList<String> errors = userValidator.validate(email, password, secondPassword, Role.ROLE_ORGANIZATION_MEMBER);
-        Company company = companyService.getByPhone(phone);
+        Company company = companyService.getCompanyByPhone(phone);
         if (errors != null) {
             checkNameAndCompany(firstName, lastName, errors, company);
             return errors;

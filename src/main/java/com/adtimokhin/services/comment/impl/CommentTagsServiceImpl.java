@@ -18,22 +18,23 @@ import java.util.Set;
 @Component
 public class CommentTagsServiceImpl implements CommentTagsService {
 
+    //Repositories
     @Autowired
-    private CommentTagRepository tagsRepository;
+    private CommentTagRepository repository;
 
 
     @Override
     public CommentTag getCommentTagById(long id) {
-        return tagsRepository.getById(id);
+        return repository.getById(id);
     }
 
     @Override
     public Set<CommentTag> getCommentTagsByIds(List<Long> ids) {
-        return new HashSet<>(tagsRepository.getAllByIdIn(ids));
+        return new HashSet<>(repository.getAllByIdIn(ids));
     }
 
     @Override
     public List<CommentTag> getAllCommentTags() {
-        return tagsRepository.findAll();
+        return repository.findAll();
     }
 }

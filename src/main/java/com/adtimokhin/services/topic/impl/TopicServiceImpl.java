@@ -22,12 +22,16 @@ import java.util.Set;
  **/
 @Component
 public class TopicServiceImpl implements TopicService {
-
+    //Repositories
     @Autowired
-    private TopicRepository topicRepository;
+    private TopicRepository repository;
 
+
+    //Services
     @Autowired
     private TopicTagService topicTagService;
+
+
 
     @Autowired
     private ContextProvider contextProvider;
@@ -35,7 +39,7 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public void addTopic(Topic topic) {
         topic.setUser(contextProvider.getUser());
-        topicRepository.save(topic);
+        repository.save(topic);
     }
 
     @Override
@@ -51,54 +55,54 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public void close(Topic topic) {
+    public void closeTopic(Topic topic) {
         topic.setClosed(true);
     }
 
     @Override
-    public void close(long topicId, User user) {
+    public void closeTopic(long topicId, User user) {
         Topic topic = getTopic(topicId);
         if(topic == null){
             return;
         }
         if(isUserCreatedTopic(topic, user)){
             topic.setClosed(true);
-            topicRepository.save(topic);
+            repository.save(topic);
         }
     }
 
     @Override
-    public void open(Topic topic) {
+    public void openTopic(Topic topic) {
         topic.setClosed(false);
     }
 
     @Override
-    public void open(long topicId, User user) {
+    public void openTopic(long topicId, User user) {
         Topic topic = getTopic(topicId);
         if(topic == null){
             return;
         }
         if(isUserCreatedTopic(topic, user)){
             topic.setClosed(false);
-            topicRepository.save(topic);
+            repository.save(topic);
         }
     }
 
     @Override
     public List<Topic> getAllTopics() {
-        return topicRepository.findAll();
+        return repository.findAll();
     }
 
     @Override
     public Topic getTopic(long id) {
-        Optional<Topic> topic = topicRepository.findById(id);
+        Optional<Topic> topic = repository.findById(id);
         return topic.orElse(null);
     }
 
     @Override
     public List<Topic> getAllTopicsForStudents() {
         Set<Role> roles = Collections.singleton(Role.ROLE_STUDENT);
-        return topicRepository.getAllByUser_RolesIsContaining(roles);
+        return repository.getAllByUser_RolesIsContaining(roles);
     }
 
     @Override
@@ -129,7 +133,7 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public boolean isUserCreatedTopic(long topicId, User user) {
-        return topicRepository.getById(topicId).getUser().equals(user);
+        return repository.getById(topicId).getUser().equals(user);
     }
 
 }

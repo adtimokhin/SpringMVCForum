@@ -21,17 +21,21 @@ import java.util.List;
 @Component
 public class TokenServiceImpl implements TokenService {
 
+    //Repositories
     @Autowired
     private TokenRepository repository;
 
     @Autowired
-    private TokenGenerator tokenGenerator;
-
-    @Autowired
     private CompanyRepository companyRepository;
 
+
+
+    @Autowired
+    private TokenGenerator tokenGenerator;
+
+
     @Override
-    public void safe(String token, Company company) {
+    public void addToken(String token, Company company) {
         Token t = new Token();
         t.setCompany(company);
         t.setTokenValue(token);
@@ -54,7 +58,7 @@ public class TokenServiceImpl implements TokenService {
         ArrayList<String> tok = (ArrayList<String>) tokenGenerator.generateTokens(company, company.getTokens());
         for (String t :
                 tok) {
-            safe(t, company);
+            addToken(t, company);
         }
     }
 

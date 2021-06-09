@@ -18,11 +18,12 @@ import java.util.List;
 
 @Component
 public class CompanyServiceImpl implements CompanyService {
+    //Repositories
     @Autowired
     private CompanyRepository repository;
 
 
-
+    //Services
     @Autowired
     private TokenService tokenService;
 
@@ -46,7 +47,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public void verify(User admin, long id) {
+    public void verifyCompany(User admin, long id) {
 
         if(admin == null){
             return;
@@ -83,7 +84,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Company getByPhone(String phone) {
+    public Company getCompanyByPhone(String phone) {
         return repository.findByPhone(phone);
     }
 
