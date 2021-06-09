@@ -25,12 +25,10 @@ public class DefaultController {
      **/
     @GetMapping("/defaultSuccessUrl")
     public String defaultSuccessUrl(HttpServletRequest request) {
-        if (request.isUserInRole(Role.ROLE_STUDENT.getAuthority())) {
-            return "redirect:/student/topics";
-        } else if (request.isUserInRole(Role.ROLE_ADMIN.getAuthority())) {
+        if (request.isUserInRole(Role.ROLE_ADMIN.getAuthority())) {
             return "redirect:/admin/home";
         }
-        return "redirect:/parent/topics";
+        return "redirect:/topics";
 
     }
 

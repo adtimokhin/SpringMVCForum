@@ -1,5 +1,6 @@
 package com.adtimokhin.services.comment.impl;
 
+import com.adtimokhin.enums.Role;
 import com.adtimokhin.models.comment.Comment;
 import com.adtimokhin.models.comment.CommentTag;
 import com.adtimokhin.models.topic.Topic;
@@ -40,7 +41,6 @@ public class CommentServiceImpl implements CommentService {
     private ContextProvider contextProvider;
 
 
-
     @Override
     public void addComment(String text, long topicId, List<Long> tagIds) {
         Topic topic = topicService.getTopic(topicId);
@@ -48,14 +48,20 @@ public class CommentServiceImpl implements CommentService {
             //TODO: when logging will be added, this kind of issue should be logged.
             return;
         }
-        if(topic.isClosed()){
+        if (topic.isClosed()) {
             return;
         }
+        User user = contextProvider.getUser();
         Comment comment = new Comment();
-        comment.setUser(contextProvider.getUser());
+        comment.setUser(user);
         comment.setText(text);
         comment.setTopic(topic);
         comment.setTotalLikes(0);
+        if (user.getRoles().contains(Role.ROLE_ORGANIZATION_MEMBER)) {
+            if (!tagIds.contains((long) 4)) {
+                tagIds.add((long) 4);
+            }
+        }
         setTags(comment, tagIds);
 
     }
@@ -95,6 +101,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void setTags(Comment comment, List<Long> tagIds) {
+        if (tagIds.isEmpty()) {
+            return;
+        }
         comment.setTags(tagsService.getCommentTagsByIds(tagIds));
         repository.save(comment);
     }
@@ -112,23 +121,25 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<Comment> getFlaggedComment(List<Comment> comments) {
         List<Comment> c = new ArrayList<>();
-        for (Comment comment:
-             comments) {
-            if(comment.isFlagged()){
+        for (Comment comment :
+                comments) {
+            if (comment.isFlagged()) {
                 c.add(comment);
             }
         }
-        if (c.size() == 0){return null;}
+        if (c.size() == 0) {
+            return null;
+        }
         return c;
     }
 
     @Override
     public void flagComment(long id, User user) {
         Comment comment = getCommentById(id);
-        if(comment == null){
+        if (comment == null) {
             return;
         }
-        if(comment.getTopic().getUser().equals(user)){
+        if (comment.getTopic().getUser().equals(user)) {
             comment.setFlagged(true);
             repository.save(comment);
         }

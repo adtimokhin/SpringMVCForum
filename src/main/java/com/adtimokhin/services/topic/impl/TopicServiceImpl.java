@@ -11,10 +11,7 @@ import com.adtimokhin.services.topic.TopicTagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author adtimokhin
@@ -101,8 +98,11 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public List<Topic> getAllTopicsForStudents() {
-        Set<Role> roles = Collections.singleton(Role.ROLE_STUDENT);
-        return repository.getAllByUser_RolesIsContaining(roles);
+        Set<Role> roleStudent = Collections.singleton(Role.ROLE_STUDENT);
+        Set<Role> roleMember = Collections.singleton(Role.ROLE_ORGANIZATION_MEMBER);
+        List<Topic> topics = repository.getAllByUser_RolesIsContaining(roleStudent);
+        topics.addAll(repository.getAllByUser_RolesIsContaining(roleMember));
+        return topics;
     }
 
     @Override
@@ -124,6 +124,20 @@ public class TopicServiceImpl implements TopicService {
     public boolean isUserAllowedOntoTopic(Topic topic) { //Todo: maybe create a filter with this logic (when I will learn how they work)
         Set<Role> creatorRole = topic.getUser().getRoles();
         return creatorRole.contains(Role.ROLE_STUDENT);
+    }
+
+    @Override
+    public boolean isUserAllowedOntoTopic(Topic topic, User user) {
+        Set<Role> creatorRole = topic.getUser().getRoles();
+        if (creatorRole.contains(Role.ROLE_PARENT)){
+            Set<Role> roles = user.getRoles();
+            if(roles.contains(Role.ROLE_PARENT) || roles.contains(Role.ROLE_ORGANIZATION_MEMBER)){
+                return true;
+            }
+            return false;
+        }
+        return true;
+
     }
 
     @Override

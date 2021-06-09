@@ -199,3 +199,69 @@
     </body>
     </html>
 </#macro>
+
+<#macro commentSectionNoRole comments flaggable closed>
+    <table>
+        <tr>
+            <td>Comment left by:</td>
+            <td></td>
+            <td>Tags</td>
+            <td></td>
+            <#if flaggable==true>
+                <td></td>
+            </#if>
+        </tr>
+        <#list comments as comment>
+            <tr>
+                <td>${comment.user.getFullName()}</td>
+                <td>${comment.getText()}</td>
+                <td>
+                </td>
+                <td>
+                    <#if likedComments?seq_index_of(comment.getId()) == -1>
+                        <#if closed == false>
+                            <div>
+                                <p>Not liked</p>
+                                <form method="post" action="/add/like">
+                                    <input type="hidden" name="comment" value="${comment.getId()}">
+                                    <input type="submit" value="Like">
+                                </form>
+                            </div>
+                        </#if>
+                    <#else>
+                        <p>Liked</p>
+                        <#if closed == false>
+                            <div>
+                                <form method="post" action="/remove/like">
+                                    <input hidden name="comment" value="${comment.getId()}">
+                                    <input type="submit" value="Unlike">
+                                </form>
+                            </div>
+                        </#if>
+                    </#if>
+                    <div>
+                        <form method="post" action="/add/report">
+                            <input type="hidden" name="commentOrTopicId" value="${comment.getId()}">
+                            <input type="hidden" name="isComment" value="true">
+                            <input type="hidden" name="reportedUserId" value="${comment.getUser().getId()}">
+                            <input type="hidden" name="causeId" value="1">
+                            <input type="submit" value="Report">
+                        </form>
+                    </div>
+                </td>
+                <#if closed == false>
+                    <#if flaggable==true>
+                        <td>
+                            <#if theCreator == true>
+                                <form method="post" action="/update/comment/flag">
+                                    <input type="hidden" name="commentId" value="${comment.getId()}">
+                                    <input type="submit" value="Flag">
+                                </form>
+                            </#if>
+                        </td>
+                    </#if>
+                </#if>
+            </tr>
+        </#list>
+    </table>
+</#macro>

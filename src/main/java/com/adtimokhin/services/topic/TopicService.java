@@ -41,6 +41,8 @@ public interface TopicService {
 
     boolean isUserAllowedOntoTopic(Topic topic);
 
+    boolean isUserAllowedOntoTopic(Topic topic, User user);
+
     boolean isUserCreatedTopic(Topic topic, User user);
 
     boolean isUserCreatedTopic(long topicId, User user);

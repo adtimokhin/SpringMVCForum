@@ -31,6 +31,10 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     public void addLike(User user, Comment comment) {
+        if (user == null || comment == null){
+            return;
+        }
+
         if(comment.getTopic().isClosed()){
             return;
         }
