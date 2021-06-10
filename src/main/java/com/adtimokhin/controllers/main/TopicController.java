@@ -5,6 +5,7 @@ import com.adtimokhin.models.comment.Comment;
 import com.adtimokhin.models.topic.Topic;
 import com.adtimokhin.models.user.User;
 import com.adtimokhin.security.ContextProvider;
+import com.adtimokhin.services.comment.AnswerService;
 import com.adtimokhin.services.comment.CommentService;
 import com.adtimokhin.services.comment.impl.CommentTagsServiceImpl;
 import com.adtimokhin.services.like.LikeService;
@@ -48,6 +49,9 @@ public class TopicController {
 
     @Autowired
     private CommentTagsServiceImpl tagsService;
+
+    @Autowired
+    private AnswerService answerService;
 
     @GetMapping("/topics")
     public String getAllTopics(Model model) {
@@ -206,11 +210,21 @@ public class TopicController {
         reportService.addReport(commentOrTopicId , isComment, reportedUserId, contextProvider.getUser().getId(), causeId);
         return "redirect:/topics";
     }
+
+
+    //working with answers
+
+    @PostMapping("add/answer")
+    public String addAnswer(@RequestParam(name = "text") String text,
+                            @RequestParam(name = "comment_id") long commentId){
+        answerService.addAnswer(text, contextProvider.getUser(), commentId);
+        return "redirect:/topics";
+    }
+
+
     private Role getRole() {
         return (Role) contextProvider.getUser().getRoles().toArray()[0];
     }
-
-    //TODO: add to config files that now all urls associated with topics can be entered either by STUDENT PARENT and MEMBER.
 
     private boolean isStudent() {
         return getRole().equals(Role.ROLE_STUDENT);

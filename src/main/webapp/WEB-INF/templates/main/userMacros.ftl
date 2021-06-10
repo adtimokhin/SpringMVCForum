@@ -210,6 +210,7 @@
             <#if flaggable==true>
                 <td></td>
             </#if>
+            <td>ANSWERS</td>
         </tr>
         <#list comments as comment>
             <tr>
@@ -261,6 +262,20 @@
                         </td>
                     </#if>
                 </#if>
+                <td>
+                    <#list comment.getAnswers() as answer>
+                        <p>${answer.getText()}</p>
+                    </#list>
+                    <#if closed == false>
+                         <div>
+                        <form method="post" action="/add/answer">
+                            <input type="text" name="text">
+                            <input type="hidden" name="comment_id" value="${comment.getId()}">
+                            <input type="submit" value="Add an answer, mate.">
+                        </form>
+                    </div>
+                    </#if>
+                </td>
             </tr>
         </#list>
     </table>

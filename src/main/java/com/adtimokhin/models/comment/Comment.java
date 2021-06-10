@@ -44,6 +44,9 @@ public class Comment {
     @OneToMany(mappedBy = "comment")
     private List<Report> reports;
 
+    @OneToMany(fetch = FetchType.EAGER, targetEntity = Answer.class, mappedBy = "comment")
+    private List<Answer> answers;
+
     @ManyToMany
     @JoinTable(
             name = "tagged_comments",
@@ -128,7 +131,15 @@ public class Comment {
         this.flagged = flagged;
     }
 
-    public String getTagNames(){
+    public List<Answer> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<Answer> answers) {
+        this.answers = answers;
+    }
+
+    public String getTagNames() {
         return Arrays.toString(this.getTags().stream().map(CommentTag::getTagName).collect(Collectors.toList()).toArray());
     }
 }
