@@ -3,6 +3,9 @@ package com.adtimokhin.models.report;
 import com.adtimokhin.models.comment.Comment;
 import com.adtimokhin.models.topic.Topic;
 import com.adtimokhin.models.user.User;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -13,6 +16,9 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "table_reports")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Report {
 
     @Id
@@ -38,56 +44,4 @@ public class Report {
     @ManyToOne
     @JoinColumn(name = "cause_id")
     private Cause cause;
-
-
-    public Report() {
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public Comment getComment() {
-        return comment;
-    }
-
-    public void setComment(Comment comment) {
-        this.comment = comment;
-    }
-
-    public Topic getTopic() {
-        return topic;
-    }
-
-    public void setTopic(Topic topic) {
-        this.topic = topic;
-    }
-
-    public User getReportedUser() {
-        return reportedUser;
-    }
-
-    public void setReportedUser(User reportedUser) {
-        this.reportedUser = reportedUser;
-    }
-
-    public User getReportingUser() {
-        return reportingUser;
-    }
-
-    public void setReportingUser(User reportingUser) {
-        this.reportingUser = reportingUser;
-    }
-
-    public Cause getCause() {
-        return cause;
-    }
-
-    public void setCause(Cause cause) {
-        this.cause = cause;
-    }
 }

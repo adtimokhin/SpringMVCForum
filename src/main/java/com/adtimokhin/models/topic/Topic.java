@@ -3,6 +3,8 @@ package com.adtimokhin.models.topic;
 import com.adtimokhin.models.comment.Comment;
 import com.adtimokhin.models.report.Report;
 import com.adtimokhin.models.user.User;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
@@ -15,6 +17,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "table_topics")
+@Getter
+@Setter
 public class Topic {
 
     @Id
@@ -46,69 +50,4 @@ public class Topic {
 
     @Column(name = "isClosed")
     private boolean isClosed;
-
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getTopic() {
-        return topic;
-    }
-
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
-    public Set<TopicTag> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<TopicTag> tags) {
-        this.tags = tags;
-    }
-
-    public List<Report> getReports() {
-        return reports;
-    }
-
-    public void setReports(List<Report> reports) {
-        this.reports = reports;
-    }
-
-    public boolean isClosed() {
-        return isClosed;
-    }
-
-    public void setClosed(boolean closed) {
-        isClosed = closed;
-    }
 }

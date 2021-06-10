@@ -1,6 +1,8 @@
 package com.adtimokhin.models.comment;
 
 import com.adtimokhin.models.user.User;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -11,6 +13,8 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "table_answers", schema = "public")
+@Getter
+@Setter
 public class Answer {
 
     @Id
@@ -28,36 +32,4 @@ public class Answer {
     @JoinColumn(name = "comment_id")
     private Comment comment;
 
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Comment getComment() {
-        return comment;
-    }
-
-    public void setComment(Comment comment) {
-        this.comment = comment;
-    }
 }

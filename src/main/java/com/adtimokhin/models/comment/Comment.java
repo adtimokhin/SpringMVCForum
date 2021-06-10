@@ -4,6 +4,8 @@ import com.adtimokhin.models.like.Like;
 import com.adtimokhin.models.report.Report;
 import com.adtimokhin.models.topic.Topic;
 import com.adtimokhin.models.user.User;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Arrays;
@@ -18,6 +20,8 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "table_comments")
+@Getter
+@Setter
 public class Comment {
 
     @Id
@@ -57,87 +61,6 @@ public class Comment {
 
     @Column(name = "flagged")
     private boolean flagged;
-
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public long getTotalLikes() {
-        return totalLikes;
-    }
-
-    public void setTotalLikes(long totalLikes) {
-        this.totalLikes = totalLikes;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Topic getTopic() {
-        return topic;
-    }
-
-    public void setTopic(Topic topic) {
-        this.topic = topic;
-    }
-
-    public List<Like> getLikes() {
-        return likes;
-    }
-
-    public void setLikes(List<Like> likes) {
-        this.likes = likes;
-    }
-
-    public Set<CommentTag> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<CommentTag> tags) {
-        this.tags = tags;
-    }
-
-    public List<Report> getReports() {
-        return reports;
-    }
-
-    public void setReports(List<Report> reports) {
-        this.reports = reports;
-    }
-
-    public boolean isFlagged() {
-        return flagged;
-    }
-
-    public void setFlagged(boolean flagged) {
-        this.flagged = flagged;
-    }
-
-    public List<Answer> getAnswers() {
-        return answers;
-    }
-
-    public void setAnswers(List<Answer> answers) {
-        this.answers = answers;
-    }
 
     public String getTagNames() {
         return Arrays.toString(this.getTags().stream().map(CommentTag::getTagName).collect(Collectors.toList()).toArray());

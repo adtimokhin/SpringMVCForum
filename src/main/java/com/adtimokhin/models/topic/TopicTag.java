@@ -1,5 +1,8 @@
 package com.adtimokhin.models.topic;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -9,6 +12,8 @@ import java.util.Set;
  **/
 @Entity
 @Table(name = "topic_tags")
+@Getter
+@Setter
 public class TopicTag {
 
     @Id
@@ -24,29 +29,4 @@ public class TopicTag {
 
     @ManyToMany(mappedBy = "tags")
     private Set<Topic> taggedTopics;
-
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getTagName() {
-        return tagName;
-    }
-
-    public void setTagName(String tagName) {
-        this.tagName = tagName;
-    }
-
-    public Set<Topic> getTaggedTopics() {
-        return taggedTopics;
-    }
-
-    public void setTaggedTopics(Set<Topic> taggedTopics) {
-        this.taggedTopics = taggedTopics;
-    }
 }

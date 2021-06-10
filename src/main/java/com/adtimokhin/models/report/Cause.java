@@ -1,5 +1,8 @@
 package com.adtimokhin.models.report;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -10,6 +13,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "table_cause")
+@Getter
+@Setter
 public class Cause {
 
     @Id
@@ -22,27 +27,4 @@ public class Cause {
     @OneToMany(mappedBy = "cause")
     private List<Report> reports;
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public List<Report> getReports() {
-        return reports;
-    }
-
-    public void setReports(List<Report> reports) {
-        this.reports = reports;
-    }
 }

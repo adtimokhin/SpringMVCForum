@@ -7,6 +7,9 @@ import com.adtimokhin.models.company.Token;
 import com.adtimokhin.models.like.Like;
 import com.adtimokhin.models.report.Report;
 import com.adtimokhin.models.topic.Topic;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -23,6 +26,9 @@ import java.util.Set;
 
 @Entity
 @Table(name = "table_users")
+@Getter
+@Setter
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -74,119 +80,9 @@ public class User {
     @OneToOne(mappedBy = "user")
     private Token token;
 
-    // constructors
-    public User() {
-    }
-
     public User(String email, String password) {
         this.email = email;
         this.password = password;
-    }
-
-
-    // Getters and Setters
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
-    public UserName getUserName() {
-        return userName;
-    }
-
-    public void setUserName(UserName userName) {
-        this.userName = userName;
-    }
-
-    public UserSurname getUserSurname() {
-        return userSurname;
-    }
-
-    public void setUserSurname(UserSurname userSurname) {
-        this.userSurname = userSurname;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
-    public List<Topic> getTopics() {
-        return topics;
-    }
-
-    public void setTopics(List<Topic> topics) {
-        this.topics = topics;
-    }
-
-    public List<Like> getLikes() {
-        return likes;
-    }
-
-    public void setLikes(List<Like> likes) {
-        this.likes = likes;
-    }
-
-    public boolean isBanned() {
-        return banned;
-    }
-
-    public void setBanned(boolean banned) {
-        this.banned = banned;
-    }
-
-    public List<Report> getReportsForUser() {
-        return reportsForUser;
-    }
-
-    public void setReportsForUser(List<Report> reportsForUser) {
-        this.reportsForUser = reportsForUser;
-    }
-
-    public List<Report> getReportsByUser() {
-        return reportsByUser;
-    }
-
-    public void setReportsByUser(List<Report> reportsByUser) {
-        this.reportsByUser = reportsByUser;
-    }
-
-    public Token getToken() {
-        return token;
-    }
-
-    public void setToken(Token token) {
-        this.token = token;
     }
 
     @Override
@@ -194,7 +90,6 @@ public class User {
         return this.getId() == ((User) obj).getId();
     }
 
-    //methods
     public String getFullName() {
         String name = getUserName().getName();
         String surname = getUserSurname().getSurname();

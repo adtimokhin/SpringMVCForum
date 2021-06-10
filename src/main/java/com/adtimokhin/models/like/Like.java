@@ -2,6 +2,8 @@ package com.adtimokhin.models.like;
 
 import com.adtimokhin.models.comment.Comment;
 import com.adtimokhin.models.user.User;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -11,6 +13,8 @@ import javax.persistence.*;
  **/
 @Entity
 @Table(name = "table_likes")
+@Getter
+@Setter
 public class Like {
 
     @Id
@@ -25,29 +29,4 @@ public class Like {
     @ManyToOne
     @JoinColumn(name = "comment_id")
     private Comment comment;
-
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Comment getComment() {
-        return comment;
-    }
-
-    public void setComment(Comment comment) {
-        this.comment = comment;
-    }
 }

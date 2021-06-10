@@ -1,5 +1,8 @@
 package com.adtimokhin.models.comment;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -10,6 +13,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "comment_tags")
+@Getter
+@Setter
 public class CommentTag {
 
     @Id
@@ -22,28 +27,4 @@ public class CommentTag {
 
     @ManyToMany(mappedBy = "tags")
     private Set<Comment> taggedComments;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getTagName() {
-        return tagName;
-    }
-
-    public void setTagName(String tagName) {
-        this.tagName = tagName;
-    }
-
-    public Set<Comment> getTaggedComments() {
-        return taggedComments;
-    }
-
-    public void setTaggedComments(Set<Comment> taggedComments) {
-        this.taggedComments = taggedComments;
-    }
 }

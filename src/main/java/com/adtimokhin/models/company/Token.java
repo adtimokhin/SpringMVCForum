@@ -1,6 +1,8 @@
 package com.adtimokhin.models.company;
 
 import com.adtimokhin.models.user.User;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -11,6 +13,8 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "table_tokens")
+@Getter
+@Setter
 public class Token {
 
     @Id
@@ -27,39 +31,6 @@ public class Token {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getTokenValue() {
-        return tokenValue;
-    }
-
-    public void setTokenValue(String tokenValue) {
-        this.tokenValue = tokenValue;
-    }
-
-    public Company getCompany() {
-        return company;
-    }
-
-    public void setCompany(Company company) {
-        this.company = company;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     /**
      * First 3 digits of the token represent a unique organization number
