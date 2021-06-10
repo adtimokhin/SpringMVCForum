@@ -8,7 +8,6 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,14 +18,13 @@ import org.springframework.stereotype.Component;
 @Aspect
 public class LogAdminAspect {
 
-    @Autowired
-    private Logger logger;
+    final private static Logger logger = Logger.getLogger("admin");
 
-    // TODO:  When I'll have access to the internet, I need to add log option for the aspect methods.
 
     @After("execution( * com.adtimokhin.services.user.UserService.banUser(..))")
     public void afterUserBannedInvocation(JoinPoint jp) {
         System.out.println("User " + ((User) jp.getArgs()[0]).getId() + " was banned at " + System.currentTimeMillis());
+        logger.info("User " + ((User) jp.getArgs()[0]).getId() + " was banned");
     }
 
     @Before("execution(* com.adtimokhin.services.report.ReportService.banUser(..))")
@@ -44,8 +42,16 @@ public class LogAdminAspect {
                     " BY " + report.getReportingUser().getId() + " ON ISSUE OF " + report.getCause() + " IN TOPIC "
                     + report.getTopic().getId() + " WAS SOLVED BY ADMIN " + admin.getId() +
                     ". REPORTED USER WAS BANNED. REASON:" + reason);
+            logger.info("REPORT ID:" + report.getId() + " REPORT ON " + report.getReportedUser().getId() +
+                    " BY " + report.getReportingUser().getId() + " ON ISSUE OF " + report.getCause() + " IN TOPIC "
+                    + report.getTopic().getId() + " WAS SOLVED BY ADMIN " + admin.getId() +
+                    ". REPORTED USER WAS BANNED. REASON:" + reason);
         } else {
             System.out.println("REPORT ID:" + report.getId() + " REPORT ON " + report.getReportedUser().getId() +
+                    " BY " + report.getReportingUser().getId() + " ON ISSUE OF " + report.getCause() + " IN COMMENT"
+                    + comment.getId() + " WAS SOLVED BY ADMIN " + admin.getId() +
+                    ". REPORTED USER WAS BANNED. REASON:" + reason);
+            logger.info("REPORT ID:" + report.getId() + " REPORT ON " + report.getReportedUser().getId() +
                     " BY " + report.getReportingUser().getId() + " ON ISSUE OF " + report.getCause() + " IN COMMENT"
                     + comment.getId() + " WAS SOLVED BY ADMIN " + admin.getId() +
                     ". REPORTED USER WAS BANNED. REASON:" + reason);
@@ -59,5 +65,6 @@ public class LogAdminAspect {
         User admin = (User) jp.getArgs()[1];
 
         System.out.println("User " + u.getId() + " was unbanned at " + System.currentTimeMillis() + " by admin " + admin.getId());
+        logger.info("User " + u.getId() + " was unbanned at " + System.currentTimeMillis() + " by admin " + admin.getId());
     }
 }

@@ -8,6 +8,7 @@ import com.adtimokhin.repositories.topic.TopicRepository;
 import com.adtimokhin.security.ContextProvider;
 import com.adtimokhin.services.topic.TopicService;
 import com.adtimokhin.services.topic.TopicTagService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,26 +34,45 @@ public class TopicServiceImpl implements TopicService {
     @Autowired
     private ContextProvider contextProvider;
 
+
+    private static final Logger logger = Logger.getLogger("file");
+
     @Override
     public void addTopic(Topic topic) {
+        if (topic ==null){
+            logger.info("tried to add a null topic");
+            return;
+        }
         topic.setUser(contextProvider.getUser());
         repository.save(topic);
     }
 
     @Override
     public void addTopic(Topic topic, String... tags) {
+        if (topic == null){
+            logger.info("Tried to add a null topic");
+            return;
+        }
         setTags(topic, tags);
         addTopic(topic);
     }
 
     @Override
     public void addTopic(Topic topic, Set<TopicTag> tags) {
+        if (topic == null){
+            logger.info("Tried to add a null topic");
+            return;
+        }
         topic.setTags(tags);
         addTopic(topic);
     }
 
     @Override
     public void closeTopic(Topic topic) {
+        if (topic == null){
+            logger.info("Tried to close a null topic");
+            return;
+        }
         topic.setClosed(true);
     }
 
@@ -60,16 +80,27 @@ public class TopicServiceImpl implements TopicService {
     public void closeTopic(long topicId, User user) {
         Topic topic = getTopic(topicId);
         if(topic == null){
+            logger.info("Tried to close a null topic");
+            return;
+        }
+        if (user == null){
+            logger.info("Tried to close a topic with id " + topicId + " by a null user");
             return;
         }
         if(isUserCreatedTopic(topic, user)){
             topic.setClosed(true);
             repository.save(topic);
+        }else {
+            logger.info("User with id " + user.getId() + " tried to close a topic with id "+ topicId + " thought that user didn't create that topic");
         }
     }
 
     @Override
     public void openTopic(Topic topic) {
+        if (topic == null){
+            logger.info("Tried to open a null topic");
+            return;
+        }
         topic.setClosed(false);
     }
 
@@ -77,11 +108,18 @@ public class TopicServiceImpl implements TopicService {
     public void openTopic(long topicId, User user) {
         Topic topic = getTopic(topicId);
         if(topic == null){
+            logger.info("Tried to open a null topic");
+            return;
+        }
+        if (user == null){
+            logger.info("Tried to open a topic with id " + topicId + " by a null user");
             return;
         }
         if(isUserCreatedTopic(topic, user)){
             topic.setClosed(false);
             repository.save(topic);
+        }else {
+            logger.info("User with id " + user.getId() + " tried to open a topic with id "+ topicId + " thought that user didn't create that topic");
         }
     }
 
@@ -107,6 +145,10 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public void setTags(Topic topic, String... tags) {
+        if(topic == null){
+            logger.info("Tried to set tags for a null topic");
+            return;
+        }
         for (String tag : tags) {
             if (!topicTagService.tagExists(tag)) {
                 topicTagService.addTag(tag);
@@ -122,12 +164,24 @@ public class TopicServiceImpl implements TopicService {
      **/
     @Override
     public boolean isUserAllowedOntoTopic(Topic topic) { //Todo: maybe create a filter with this logic (when I will learn how they work)
+        if (topic == null){
+            logger.info("Tried to enter a null topic");
+            return false;
+        }
         Set<Role> creatorRole = topic.getUser().getRoles();
         return creatorRole.contains(Role.ROLE_STUDENT);
     }
 
     @Override
     public boolean isUserAllowedOntoTopic(Topic topic, User user) {
+        if (topic == null){
+            logger.info("Tried to enter a null topic");
+            return false;
+        }
+        if (user == null){
+            logger.info("A null user tried to enter a topic with id "+ topic.getId());
+            return false;
+        }
         Set<Role> creatorRole = topic.getUser().getRoles();
         if (creatorRole.contains(Role.ROLE_PARENT)){
             Set<Role> roles = user.getRoles();
@@ -142,12 +196,29 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public boolean isUserCreatedTopic(Topic topic, User user) {
+        if (topic == null){
+            logger.info("Tried to enter a null topic");
+            return false;
+        }
+        if (user == null){
+            logger.info("A null user tried to enter a topic with id "+ topic.getId());
+            return false;
+        }
         return user.equals(topic.getUser());
     }
 
     @Override
     public boolean isUserCreatedTopic(long topicId, User user) {
-        return repository.getById(topicId).getUser().equals(user);
+        Topic topic = repository.getById(topicId);
+        if (topic == null){
+            logger.info("Tried to enter a null topic");
+            return false;
+        }
+        if (user == null){
+            logger.info("A null user tried to enter a topic with id "+ topic.getId());
+            return false;
+        }
+        return topic.getUser().equals(user);
     }
 
 }

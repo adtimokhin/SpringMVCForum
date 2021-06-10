@@ -8,6 +8,7 @@ import com.adtimokhin.repositories.user.UserRepository;
 import com.adtimokhin.repositories.user.UserSurnameRepository;
 import com.adtimokhin.services.company.TokenService;
 import com.adtimokhin.services.user.UserService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -45,6 +46,9 @@ public class UserServiceImpl implements UserService {
 
     private Random random = new Random();
 
+    private static final Logger logger = Logger.getLogger("file");
+    private static final Logger adminLogger = Logger.getLogger("admin");
+
     @Override
     public User getUser(String email) {
         return repository.findByEmail(email);
@@ -58,6 +62,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addUser(User user, Role... roles) {
 
+        if (user == null){
+            logger.info("Tried to add a null user");
+            return;
+        }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(new HashSet<>(Arrays.asList(roles)));
         assignUserFullName(user);
@@ -67,6 +76,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void addOrganizationMember(User user, String tokenValue) {
+        if (user == null){
+            logger.info("Tried to add a null user as an organization member");
+            return;
+        }
+
         Token token = tokenService.getToken(tokenValue);
         user.setToken(token);
         addUser(user, Role.ROLE_ORGANIZATION_MEMBER);
@@ -76,8 +90,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void assignUserFullName(User user) {
-        // Right now full name creation for a single user will occur in this method. In future this can be placed into
-        // UserName and UserSurname Services
+        if (user == null){
+            logger.info("Tried to assign a full name to a null user");
+            return;
+        }
 
         //Todo: So that we don't need to recount number of names, we have to assign the size to the services of UserName and UserSurname
         long countNames = userNameRepository.count();
@@ -92,6 +108,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(User user) {
+        if (user == null){
+            logger.info("Tried to delete a null user");
+            return;
+        }
         repository.delete(user);
     }
 
@@ -112,12 +132,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void banUser(User user) {
+        if (user == null){
+            logger.info("Tried to ban a null user");
+            adminLogger.info("Tried to ban a null user");
+            return;
+        }
         user.setBanned(true);
         repository.save(user);
     }
 
     @Override
     public void unBanUser(User user) {
+        if (user == null){
+            logger.info("Tried to unban a null user");
+            adminLogger.info("Tried to unban a null user");
+            return;
+        }
         user.setBanned(false);
         repository.save(user);
     }

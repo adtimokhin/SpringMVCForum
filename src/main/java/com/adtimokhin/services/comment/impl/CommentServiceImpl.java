@@ -9,6 +9,7 @@ import com.adtimokhin.repositories.comment.CommentRepository;
 import com.adtimokhin.security.ContextProvider;
 import com.adtimokhin.services.comment.CommentService;
 import com.adtimokhin.services.topic.TopicService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,12 +41,14 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private ContextProvider contextProvider;
 
+    private static final Logger logger = Logger.getLogger("file");
+
 
     @Override
     public void addComment(String text, long topicId, List<Long> tagIds) {
         Topic topic = topicService.getTopic(topicId);
-        if (topic == null) { //TODO: add this sort of checks in all services
-            //TODO: when logging will be added, this kind of issue should be logged.
+        if (topic == null) {
+            logger.info("No topic with id "+ topicId + " was found");
             return;
         }
         if (topic.isClosed()) {
@@ -75,7 +78,7 @@ public class CommentServiceImpl implements CommentService {
     public List<Comment> getAllCommentsByTopic(long topicId) {
         Topic topic = topicService.getTopic(topicId);
         if (topic == null) {
-            //TODO: when logging will be added, this kind of issue should be logged.
+            logger.info("No topic with id "+ topicId + " was found");
             return null;
         }
         return repository.getAllByTopicOrderByTotalLikesDesc(topic);
@@ -89,18 +92,30 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void incrementTotalLikes(Comment comment) {
+        if(comment == null){
+            logger.info("Tried to add a like to a null comment");
+            return;
+        }
         comment.setTotalLikes(comment.getTotalLikes() + 1);
         repository.save(comment);
     }
 
     @Override
     public void decrementTotalLikes(Comment comment) {
+        if(comment == null){
+            logger.info("Tried to remove a like to a null comment");
+            return;
+        }
         comment.setTotalLikes(comment.getTotalLikes() - 1);
         repository.save(comment);
     }
 
     @Override
     public void setTags(Comment comment, List<Long> tagIds) {
+        if(comment == null){
+            logger.info("Tried to set tags to a null comment");
+            return;
+        }
         if (tagIds.isEmpty()) {
             return;
         }
@@ -110,6 +125,10 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<String> getTagNames(Comment comment) {
+        if(comment == null){
+            logger.info("Tried to get tags from a null comment");
+            return null;
+        }
         return comment.getTags().stream().map(CommentTag::getTagName).collect(Collectors.toList());
     }
 
@@ -135,13 +154,20 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void flagComment(long id, User user) {
+        if (user == null){
+            logger.info("Tried to flag a comment with id " + id + " by a null user");
+            return;
+        }
         Comment comment = getCommentById(id);
         if (comment == null) {
+            logger.info("Tried to flag a null comment with id " + id + " by a user with id " + user.getId());
             return;
         }
         if (comment.getTopic().getUser().equals(user)) {
             comment.setFlagged(true);
             repository.save(comment);
+        }else {
+            logger.info("Tried to flag a  comment with id " + id + " by a user with id " + user.getId() + " that didn't create the comment.");
         }
     }
 
