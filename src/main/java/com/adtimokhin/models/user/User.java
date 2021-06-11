@@ -80,6 +80,13 @@ public class User {
     @OneToOne(mappedBy = "user")
     private Token token;
 
+    @Column(name = "first_time")
+    private boolean firstTime;
+
+    @Column(name = "email_verification_token")
+    private String emailVerificationToken;
+
+
     public User(String email, String password) {
         this.email = email;
         this.password = password;

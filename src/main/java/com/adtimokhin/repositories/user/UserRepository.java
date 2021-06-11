@@ -18,8 +18,8 @@ public interface UserRepository extends JpaRepository<User, Long>{
     List<User> getAllByBanned(boolean banned);
 
     User findById(long id);
+
+    List<User> findAllByEmailVerificationTokenIsNotNull();
+
+    User findByEmailVerificationToken(String token);
 }
-//public interface UserRepository extends JpaRepository<User, Long> {
-//
-//    User findByEmail(String email);
-//}

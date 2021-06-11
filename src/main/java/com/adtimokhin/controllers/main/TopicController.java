@@ -11,6 +11,7 @@ import com.adtimokhin.services.comment.impl.CommentTagsServiceImpl;
 import com.adtimokhin.services.like.LikeService;
 import com.adtimokhin.services.report.ReportService;
 import com.adtimokhin.services.topic.TopicService;
+import com.adtimokhin.services.user.UserService;
 import com.adtimokhin.utils.validator.TopicValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -53,8 +54,19 @@ public class TopicController {
     @Autowired
     private AnswerService answerService;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/topics")
     public String getAllTopics(Model model) {
+        // Check that a user that had logged in had ever logged in before.
+
+        User user = contextProvider.getUser();
+        if (userService.isFirstTime(user)){
+            userService.setUserEnteredTheForum(user);
+            return "redirect:/intro";
+        }
+
         if (isStudent()){
             model.addAttribute("topics", topicService.getAllTopicsForStudents());
         }else {

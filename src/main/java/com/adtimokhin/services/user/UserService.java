@@ -39,4 +39,12 @@ public interface UserService {
     void banUser(User user);
 
     void unBanUser(User user);
+
+    boolean isFirstTime(User user);
+
+    void setUserEnteredTheForum(User user);
+
+    List<String> getAllEmailVerificationTokens();
+
+    boolean verifyEmail(String token);
 }

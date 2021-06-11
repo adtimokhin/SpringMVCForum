@@ -8,15 +8,13 @@ import com.adtimokhin.repositories.user.UserRepository;
 import com.adtimokhin.repositories.user.UserSurnameRepository;
 import com.adtimokhin.services.company.TokenService;
 import com.adtimokhin.services.user.UserService;
+import com.adtimokhin.utils.TokenGenerator;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author adtimokhin
@@ -27,7 +25,7 @@ import java.util.Random;
 public class UserServiceImpl implements UserService {
     //Repositories
     @Autowired
-    private  UserRepository repository;
+    private UserRepository repository;
 
     @Autowired
     private UserNameRepository userNameRepository;
@@ -46,6 +44,9 @@ public class UserServiceImpl implements UserService {
 
     private Random random = new Random();
 
+    @Autowired
+    private TokenGenerator tokenGenerator;
+
     private static final Logger logger = Logger.getLogger("file");
     private static final Logger adminLogger = Logger.getLogger("admin");
 
@@ -62,7 +63,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addUser(User user, Role... roles) {
 
-        if (user == null){
+        if (user == null) {
             logger.info("Tried to add a null user");
             return;
         }
@@ -70,13 +71,14 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(new HashSet<>(Arrays.asList(roles)));
         assignUserFullName(user);
+        user.setEmailVerificationToken(tokenGenerator.generateEmailVerificationToken());
         repository.save(user);
 
     }
 
     @Override
     public void addOrganizationMember(User user, String tokenValue) {
-        if (user == null){
+        if (user == null) {
             logger.info("Tried to add a null user as an organization member");
             return;
         }
@@ -90,7 +92,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void assignUserFullName(User user) {
-        if (user == null){
+        if (user == null) {
             logger.info("Tried to assign a full name to a null user");
             return;
         }
@@ -108,7 +110,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(User user) {
-        if (user == null){
+        if (user == null) {
             logger.info("Tried to delete a null user");
             return;
         }
@@ -132,7 +134,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void banUser(User user) {
-        if (user == null){
+        if (user == null) {
             logger.info("Tried to ban a null user");
             adminLogger.info("Tried to ban a null user");
             return;
@@ -143,13 +145,71 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void unBanUser(User user) {
-        if (user == null){
+        if (user == null) {
             logger.info("Tried to unban a null user");
             adminLogger.info("Tried to unban a null user");
             return;
         }
         user.setBanned(false);
         repository.save(user);
+    }
+
+    @Override
+    public boolean isFirstTime(User user) {
+        if (user == null) {
+            logger.info("Tried find if a null user has logged in before");
+            return false;
+        }
+        return user.isFirstTime();
+    }
+
+    @Override
+    public void setUserEnteredTheForum(User user) {
+        if (user == null) {
+            logger.info("Tried log in as a null user");
+            return;
+        }
+        if (!user.isFirstTime()) {
+            logger.info("Tried to set not first time to a user with id" + user.getId() + " that already had logged in");
+            return;
+        }
+        user.setFirstTime(false);
+        repository.save(user);
+    }
+
+    @Override
+    public List<String> getAllEmailVerificationTokens() {
+        List<User> users = repository.findAllByEmailVerificationTokenIsNotNull();
+        if (users == null) {
+            return null;
+        }
+        List<String> tokens = new ArrayList<>();
+        for (User user :
+                users) {
+            tokens.add(user.getEmailVerificationToken());
+        }
+        return tokens;
+    }
+
+    @Override
+    public boolean verifyEmail(String token) {
+        if (token == null) {
+            logger.info("Tried to verify email with a null token");
+            return false;
+        }
+        if (token.isEmpty()) {
+            logger.info("Tried to verify email with a null token");
+            return false;
+        }
+
+        User user = repository.findByEmailVerificationToken(token);
+        if (user == null) {
+            logger.info("Tried to verify email with an invalid token " + token);
+            return false;
+        }
+        user.setEmailVerificationToken(null);
+        repository.save(user);
+        return true;
     }
 
 

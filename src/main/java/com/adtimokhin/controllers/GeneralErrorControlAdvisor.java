@@ -23,12 +23,14 @@ public class GeneralErrorControlAdvisor {
         return "error/404";
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)  // 500
-    @ExceptionHandler(Exception.class)
-    public String anyExceptionHandler() {
-        logger.error("Internal server error.");
-        return "error/500";
-    }
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)  // 500
+//    @ExceptionHandler(Exception.class)
+//    public String anyExceptionHandler() {
+//        logger.error("Internal server error.");
+//        return "error/500";
+//    }
+
+    //todo: add more error urls for different errors, so that they can be logged.
 
 
 }

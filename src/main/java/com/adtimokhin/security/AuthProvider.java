@@ -33,6 +33,11 @@ public class AuthProvider implements AuthenticationProvider {
             throw new AuthenticationCredentialsNotFoundException("No such account is found");
         }
 
+        //checking if user had verified their email
+        if(user.getEmailVerificationToken() != null){
+            throw new LockedException("email");
+        }
+
         //checking if user is blocked
         if (user.isBanned()) {
             throw new LockedException("User is blocked");

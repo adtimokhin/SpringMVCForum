@@ -41,7 +41,11 @@ public class AuthController {
                 AuthenticationException authenticationException =
                         (AuthenticationException) request.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
                 if (authenticationException.getClass().equals(LockedException.class)){
-                    model.addAttribute("error" , "User banned");
+                    if(authenticationException.getMessage().equals("email")){
+                        model.addAttribute("error" , "Unverified email");
+                    }else {
+                        model.addAttribute("error", "User banned");
+                    }
                 }
                 else {
                     model.addAttribute("error" , "Bad credentials");

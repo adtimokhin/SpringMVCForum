@@ -11,12 +11,15 @@
         <#if error == "User banned">
             <p>You have been banned from using the forum.</p>
         <#else>
-            <p>Cannot find user with this credentials.</p>
+            <#if error == "Unverified email">
+                <p>You didn't verify your email yet</p>
+            <#else>
+                <p>Cannot find user with this credentials.</p>
+            </#if>
         </#if>
     </#if>
 </div>
 <form action="/login/process" method="post">
-<#--<form action="/login" method="post">-->
     <div>
         <p>Enter email or phone number</p>
         <input name="email" type="text">
@@ -27,7 +30,7 @@
     </div>
     <div>
         <p>Remember me?</p>
-        <input type="checkbox" name="remember-me" />
+        <input type="checkbox" name="remember-me"/>
     </div>
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
     <input type="submit">

@@ -4,6 +4,7 @@ import com.adtimokhin.models.company.Company;
 import com.adtimokhin.models.company.Token;
 import com.adtimokhin.services.company.CompanyService;
 import com.adtimokhin.services.company.TokenService;
+import com.adtimokhin.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +31,9 @@ public class TokenGenerator {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private UserService userService;
 
     private static Random random = new Random();
 
@@ -132,5 +136,41 @@ public class TokenGenerator {
         return tokens;
     }
 
+
+    //email verification token generation
+
+    public String generateEmailVerificationToken() {
+        StringBuilder newToken = new StringBuilder();
+        int tokenLength = 20;
+        List<String> tokens = userService.getAllEmailVerificationTokens();
+        for (int i = 0; i < tokenLength; i++) {
+            //generating a random symbol for a new token.
+            char symbol = generateSymbol();
+            if (tokens.size() != 0) {
+                List<String> subTokens = new ArrayList<>();
+                for (int j = 0; j < tokens.size(); j++) {
+                    String token = tokens.get(j);
+                    if (token.toCharArray()[i] == symbol) {
+                        subTokens.add(token);
+                    }
+                }
+                tokens = subTokens;
+            }
+            newToken.append(symbol);
+        }
+        if (tokens.size() != 0) { //That means that token is not unique. Hence, we should do the token again.
+            return generateEmailVerificationToken();
+        }
+        return newToken.toString();
+    }
+
+    private char generateSymbol() {
+        int i = random.nextInt(91);
+        int j = 124 - i;
+        if (j == 47 || j == 58 || j == 59 || j == 96) {
+            j++;
+        }
+        return Character.toString(j).toCharArray()[0];
+    }
 
 }
