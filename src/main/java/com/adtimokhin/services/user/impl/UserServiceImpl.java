@@ -8,6 +8,7 @@ import com.adtimokhin.repositories.user.UserRepository;
 import com.adtimokhin.repositories.user.UserSurnameRepository;
 import com.adtimokhin.services.company.TokenService;
 import com.adtimokhin.services.user.UserService;
+import com.adtimokhin.utils.EmailSender;
 import com.adtimokhin.utils.TokenGenerator;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private TokenGenerator tokenGenerator;
 
+    @Autowired
+    private EmailSender emailSender;
+
     private static final Logger logger = Logger.getLogger("file");
     private static final Logger adminLogger = Logger.getLogger("admin");
 
@@ -73,6 +77,8 @@ public class UserServiceImpl implements UserService {
         assignUserFullName(user);
         user.setEmailVerificationToken(tokenGenerator.generateEmailVerificationToken());
         repository.save(user);
+
+        emailSender.sentEmailVerificationLetter(user);
 
     }
 
@@ -171,6 +177,10 @@ public class UserServiceImpl implements UserService {
         }
         if (!user.isFirstTime()) {
             logger.info("Tried to set not first time to a user with id" + user.getId() + " that already had logged in");
+            return;
+        }
+        if (user.getEmailVerificationToken() != null) {
+            logger.info("User with id " + user.getId() + " tried to enter the forum without verifying his/her email");
             return;
         }
         user.setFirstTime(false);
