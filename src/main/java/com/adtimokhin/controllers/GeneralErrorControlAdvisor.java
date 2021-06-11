@@ -1,5 +1,6 @@
 package com.adtimokhin.controllers;
 
+import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,10 +14,21 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @ControllerAdvice
 public class GeneralErrorControlAdvisor {
 
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    private static final Logger logger = Logger.getLogger("file");
+
+    @ResponseStatus(HttpStatus.NOT_FOUND) // 404
     @ExceptionHandler(NoHandlerFoundException.class)
-    public String exception404(){
-        System.out.println("ERRor 404!!!!!");
+    public String exception404() {
+        logger.error("Tried to access page that does not exist.");
         return "error/404";
     }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)  // 500
+    @ExceptionHandler(Exception.class)
+    public String anyExceptionHandler() {
+        logger.error("Internal server error.");
+        return "error/500";
+    }
+
+
 }

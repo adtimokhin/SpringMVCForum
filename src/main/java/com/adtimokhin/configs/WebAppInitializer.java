@@ -32,7 +32,6 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
     protected FrameworkServlet createDispatcherServlet(WebApplicationContext servletAppContext) {
         DispatcherServlet dispatcherServlet = (DispatcherServlet) super.createDispatcherServlet(servletAppContext);
 //        dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
-        // Todo: когда проект будет +/- готов, то раскомментриую эту линию кода сверху. Благодаря ней ошибка 404 перенапрвляется на controlAdvisor
         return dispatcherServlet;
     }
 

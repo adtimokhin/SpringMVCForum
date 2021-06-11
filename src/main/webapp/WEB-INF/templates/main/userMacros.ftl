@@ -56,8 +56,9 @@
         </#list>
     </table>
     <a href="/login">Login page</a>
-    <a href="/sign_up">Sign up page</a>
-    <a href="/logout">You may also logout</a>
+    <form action="/logout" method="post">
+        <input type="submit" value="Logout">
+    </form>
     </body>
     </html>
 </#macro>
@@ -82,13 +83,13 @@
                 <td>
                     <#if likedComments?seq_index_of(comment.getId()) == -1>
                         <#if closed == false>
-                        <div>
-                            <p>Not liked</p>
-                            <form method="post" action="/${role}/add/like">
-                                <input type="hidden" name="comment" value="${comment.getId()}">
-                                <input type="submit" value="Like">
-                            </form>
-                        </div>
+                            <div>
+                                <p>Not liked</p>
+                                <form method="post" action="/${role}/add/like">
+                                    <input type="hidden" name="comment" value="${comment.getId()}">
+                                    <input type="submit" value="Like">
+                                </form>
+                            </div>
                         </#if>
                     <#else>
                         <p>Liked</p>
@@ -112,16 +113,16 @@
                     </div>
                 </td>
                 <#if closed == false>
-                <#if flaggable==true>
-                    <td>
-                        <#if theCreator == true>
-                            <form method="post" action="/${role}/update/comment/flag">
-                                <input type="hidden" name="commentId" value="${comment.getId()}">
-                                <input type="submit" value="Flag">
-                            </form>
-                        </#if>
-                    </td>
-                </#if>
+                    <#if flaggable==true>
+                        <td>
+                            <#if theCreator == true>
+                                <form method="post" action="/${role}/update/comment/flag">
+                                    <input type="hidden" name="commentId" value="${comment.getId()}">
+                                    <input type="submit" value="Flag">
+                                </form>
+                            </#if>
+                        </td>
+                    </#if>
                 </#if>
             </tr>
         </#list>
@@ -143,13 +144,13 @@
                     <input type="submit" value="Open the discussion again.">
                 </form>
             </div>
-            <#else>
-                <div>
-                    <form action="/${role}/update/topic/close" method="post">
-                        <input type="hidden" name="topicId" value="${topic.id}">
-                        <input type="submit" value="Close the discussion">
-                    </form>
-                </div>
+        <#else>
+            <div>
+                <form action="/${role}/update/topic/close" method="post">
+                    <input type="hidden" name="topicId" value="${topic.id}">
+                    <input type="submit" value="Close the discussion">
+                </form>
+            </div>
         </#if>
     </#if>
     <div>
@@ -267,13 +268,13 @@
                         <p>${answer.getText()}</p>
                     </#list>
                     <#if closed == false>
-                         <div>
-                        <form method="post" action="/add/answer">
-                            <input type="text" name="text">
-                            <input type="hidden" name="comment_id" value="${comment.getId()}">
-                            <input type="submit" value="Add an answer, mate.">
-                        </form>
-                    </div>
+                        <div>
+                            <form method="post" action="/add/answer">
+                                <input type="text" name="text">
+                                <input type="hidden" name="comment_id" value="${comment.getId()}">
+                                <input type="submit" value="Add an answer, mate.">
+                            </form>
+                        </div>
                     </#if>
                 </td>
             </tr>
