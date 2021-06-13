@@ -169,7 +169,7 @@ public class TopicServiceImpl implements TopicService {
      * Students are only allowed to the topics that are initialized by students as well.
      **/
     @Override
-    public boolean isUserAllowedOntoTopic(Topic topic) { //Todo: maybe create a filter with this logic (when I will learn how they work)
+    public boolean isUserAllowedOntoTopic(Topic topic) {
         if (topic == null){
             logger.info("Tried to enter a null topic");
             return false;

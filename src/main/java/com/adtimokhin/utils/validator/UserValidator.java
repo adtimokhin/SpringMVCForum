@@ -23,9 +23,6 @@ public class UserValidator {
     @Autowired
     private UserService userService;
 
-//    private static final String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";//TODO: I've tried different regular expressions from https://mailtrap.io/blog/java-email-validation/#Adding-restrictions-to-the-domain-name-part , though, only the one I've chosen works. It provides more or less accurate check for emails, however, some options are still will be validated as wrong.
-//    private static Pattern emailPattern = Pattern.compile(emailRegex);
-
     private static final String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})";
     private static Pattern passwordPattern = Pattern.compile(passwordRegex);
 
@@ -61,11 +58,6 @@ public class UserValidator {
         return (errors.size() != 0) ? errors : null;
 
     }
-
-//    private static boolean isEmailValid(String email) {
-//        Matcher matcher = emailPattern.matcher(email);
-//        return matcher.matches();
-//    }
 
 
     private static boolean isPasswordValid(String password) {

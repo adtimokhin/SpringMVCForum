@@ -1,12 +1,15 @@
 package com.adtimokhin.controllers.main;
 
+import com.adtimokhin.enums.Role;
 import com.adtimokhin.models.comment.Comment;
 import com.adtimokhin.models.company.Company;
 import com.adtimokhin.models.report.Report;
+import com.adtimokhin.models.user.User;
 import com.adtimokhin.security.ContextProvider;
 import com.adtimokhin.services.company.CompanyService;
 import com.adtimokhin.services.report.ReportService;
 import com.adtimokhin.services.user.UserService;
+import com.adtimokhin.utils.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
@@ -14,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,6 +42,9 @@ public class AdminController {
     @Autowired
     private ContextProvider contextProvider;
 
+    @Autowired
+    private UserValidator userValidator;
+
     @GetMapping("/home")
     public String test() {
         return "admin/homePage";
@@ -51,7 +58,7 @@ public class AdminController {
 
     @GetMapping("get/reports")
     public String getReports(Model model) {
-        model.addAttribute("reports", reportService.getAllReports()); //Todo: не отображаются корректно репорты, потому что, мы всегда считаем, что все репорты ссылаются на комментарий, а не на топик. Нужно фиксить, дружище.
+        model.addAttribute("reports", reportService.getAllReports());
         return "admin/reports";
     }
 
@@ -87,15 +94,15 @@ public class AdminController {
     @PostMapping("/update/block/user")
     public String banUser(@RequestParam(name = "reason") String reason,
                           @RequestParam(name = "reportId") long reportId) {
-        reportService.banUser(reportService.getReportById(reportId), reason, contextProvider.getUser());
-        return "redirect:/admin/home";
+        reportService.banUser(reportService.getReportById(reportId), reason, contextProvider.getUser()); //todo: we don't validate if mistakes have occurred while method was running. We need to check that. Not only for this mapping, but for ALL  mappings.
+        return "admin/successPage";
 
     }
 
     @PostMapping("/update/unblock/user")
     public String unBanUser(@RequestParam(name = "userId") long id) {
         reportService.unBanUser(userService.getUser(id), contextProvider.getUser());
-        return "redirect:/admin/home";
+        return "admin/successPage";
     }
 
 
@@ -121,6 +128,52 @@ public class AdminController {
     @PostMapping("verify/company")
     public String verifyCompany(@RequestParam(name = "id") long id) {
         companyService.verifyCompany(contextProvider.getUser(), id);
-        return "redirect:/admin/home";
+        return "admin/successPage";
+    }
+
+    @GetMapping("create/admin")
+    public String createAdmin() {
+        return "admin/createAdmin";
+    }
+
+    @PostMapping("create/admin")
+    public String postCreateAdmin(@RequestParam("email") String email,
+                                  @RequestParam("password") String password,
+                                  @RequestParam("secondPassword") String secondPassword, Model model) {
+        User user = userService.getUser(email);
+        if (user == null) {
+            ArrayList<String> errors = userValidator.validate(email, password, secondPassword, Role.ROLE_ADMIN);
+            if (errors == null) {
+                user = new User(email, password);
+                userService.addUser(user, true, Role.ROLE_ADMIN);
+            } else {
+                model.addAttribute("errors", errors);
+                return "admin/createAdmin";
+            }
+        } else {
+            userService.setRole(user, Role.ROLE_ADMIN);
+        }
+        return "admin/successPage";
     }
 }
+
+
+//    <div>
+//            <label>Email</label>
+//
+//            <input type="text" name="email"
+//                    <#if email??>
+//                        value="${email}"
+//                    </#if>
+//            >
+//        </div>
+//        <div>
+//            <label>Password</label>
+//            <input type="password" name="password">
+//        </div>
+//        <div>
+//            <label>Re-enter your password</label>
+//            <input type="password" name="secondPassword">
+//        </div>
+//        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+//        <input type="submit">

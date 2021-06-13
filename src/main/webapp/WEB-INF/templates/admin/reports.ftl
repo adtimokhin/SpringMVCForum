@@ -17,8 +17,13 @@
     </tr>
     <#list reports as report>
         <tr>
-            <td>${report.getComment().getId()}</td>
-            <td>____</td>
+            <#if report.getComment()??>
+                <td>${report.getComment().getId()}</td>
+                <td>____</td>
+                <#else>
+                    <td>____</td>
+                    <td>${report.getTopic().getId()}</td>
+            </#if>
             <td>${report.getReportedUser().getFullName()}</td>
             <td>${report.getReportingUser().getFullName()}</td>
             <td>${report.cause.title}</td>

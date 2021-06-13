@@ -59,10 +59,7 @@ public class AuthController {
     }
 
     @GetMapping("/sign_up")
-    public String getSignUp(Model model) {
-        if (model.getAttribute(ERROR_ATTRIBUTE) != null) { // dealing with errors
-            System.out.println(model.getAttribute(ERROR_ATTRIBUTE)); //Todo: add error messages to be passed via model
-        }
+    public String getSignUp() {
         return "auth/signUp";
     }
 

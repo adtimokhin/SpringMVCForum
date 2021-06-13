@@ -26,10 +26,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("User with such email is not found");
         }
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), user.getRoles());
-
-        /*FIXME: Right now we have AuthProvider and UserDetailsServiceImpl doing the same job,
-           but I am using only AuthProvider. I nee to either understand how and where to use UserDetailsServiceImpl
-            or to delete it */
     }
 
 

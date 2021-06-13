@@ -24,6 +24,7 @@
             <p>Tell us more about your problem</p>
             <input type="text" name="description">
         </div>
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
         <div>
             <p>Send it to us!</p>
             <input type="submit">

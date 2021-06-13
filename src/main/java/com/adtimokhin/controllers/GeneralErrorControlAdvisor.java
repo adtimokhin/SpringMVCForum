@@ -25,8 +25,8 @@ public class GeneralErrorControlAdvisor {
 
 //    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)  // 500
 //    @ExceptionHandler(Exception.class)
-//    public String anyExceptionHandler() {
-//        logger.error("Internal server error.");
+//    public String anyExceptionHandler(Exception e) {
+//        logger.error("Internal server error." + e.getLocalizedMessage());
 //        return "error/500";
 //    }
 

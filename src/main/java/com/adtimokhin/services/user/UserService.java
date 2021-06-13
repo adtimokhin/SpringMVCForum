@@ -47,4 +47,7 @@ public interface UserService {
     List<String> getAllEmailVerificationTokens();
 
     boolean verifyEmail(String token);
+
+    void setRole(User user, Role role);
+
 }

@@ -240,5 +240,9 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
-
+    @Override
+    public void setRole(User user, Role role) {
+        user.setRoles(Collections.singleton(role));
+        repository.save(user);
+    }
 }

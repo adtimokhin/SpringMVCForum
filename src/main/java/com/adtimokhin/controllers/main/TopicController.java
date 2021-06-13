@@ -13,6 +13,7 @@ import com.adtimokhin.services.report.ReportService;
 import com.adtimokhin.services.topic.TopicService;
 import com.adtimokhin.services.user.UserService;
 import com.adtimokhin.utils.validator.TopicValidator;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
@@ -58,6 +59,9 @@ public class TopicController {
 
     @Autowired
     private UserService userService;
+
+    private static final Logger logger = Logger.getLogger("file");
+
 
     @GetMapping("/topics")
     public String getAllTopics(Model model) {
@@ -128,20 +132,9 @@ public class TopicController {
     //adding a new topic
     @GetMapping("/add/topic")
     public String studentAddTopic() {
-//        model.addAttribute("topic", new Topic());
         return "/main/pages/newTopicPage";
     }
 
-//    @PostMapping("/add/topic")
-////    public String studentAddTopic(@ModelAttribute Topic topic, BindingResult result) {
-////        topicValidator.validate(topic, result);
-////        if (result.hasErrors()) {
-////            return "/main/pages/newTopicPage"; // Todo: have a look at how errors are displayed.
-////        }
-////        topicService.addTopic(topic);
-////        return "redirect:/topics";
-////
-////    }
 
     @PostMapping("/add/topic")
     public String getAddTopic(@RequestParam(name = "topic") String topic,
@@ -182,7 +175,7 @@ public class TopicController {
                                     @RequestParam(name = "tags", required = false) List<Long> tags) {
 
         if (!topicService.isUserAllowedOntoTopic(topicService.getTopic(topicId), contextProvider.getUser())) {
-            return "redirect:/topics"; //Todo:redirect to some error page (access denied page, e.g.)
+            return "error/accessDeniedPage";
         }
 
         commentService.addComment(msg, topicId, tags);
@@ -197,13 +190,13 @@ public class TopicController {
 
     // add a like to a comment
     @PostMapping("/add/like")
-    public String studentAddLike(@RequestParam(name = "comment") long commentId) {
+    public String studentAddLike(@RequestParam(name = "comment") long commentId) throws NoHandlerFoundException {
         Comment comment = commentService.getCommentById(commentId);
         if (comment == null) {
-            return "redirect:/topics"; //Todo:redirect to some error page (access denied page, e.g.)
+            throw new NoHandlerFoundException("GET", "/add/like/" + commentId, new HttpHeaders());
         }
         if (!topicService.isUserAllowedOntoTopic(comment.getTopic(), contextProvider.getUser())) {
-            return "redirect:/topics"; //Todo:redirect to some error page (access denied page, e.g.)
+            return "error/accessDeniedPage";
         }
         likeService.addLike(contextProvider.getUser(), comment);
         return "redirect:/topics";
@@ -211,13 +204,13 @@ public class TopicController {
 
     // removing a like from a comment
     @PostMapping("/remove/like")
-    public String studentRemoveLike(@RequestParam(name = "comment") long commentId) {
+    public String studentRemoveLike(@RequestParam(name = "comment") long commentId) throws NoHandlerFoundException {
         Comment comment = commentService.getCommentById(commentId);
         if (comment == null) {
-            return "redirect:/topics"; //Todo:redirect to some error page (access denied page, e.g.)
+            throw new NoHandlerFoundException("GET", "/remove/like/" + commentId, new HttpHeaders());
         }
         if (!topicService.isUserAllowedOntoTopic(comment.getTopic(), contextProvider.getUser())) {
-            return "redirect:/topics"; //Todo:redirect to some error page (access denied page, e.g.)
+            return "error/accessDeniedPage";
         }
         likeService.deleteLike(contextProvider.getUser(), comment);
         return "redirect:/topics";
@@ -230,17 +223,25 @@ public class TopicController {
             @RequestParam(name = "isComment") Boolean isComment,
             @RequestParam(name = "reportedUserId") long reportedUserId,
             @RequestParam(name = "causeId") long causeId
-    ) {
+    ) throws NoHandlerFoundException {
         // only is user is allowed on the topic should he/she create a report.
         if (isComment) {
             Comment comment = commentService.getCommentById(commentOrTopicId);
+            if (comment ==null){
+                logger.error("Tried to add a report on to a null comment with id "+commentOrTopicId);
+                throw new NoHandlerFoundException("GET", "/add/report/" + commentOrTopicId, new HttpHeaders());
+            }
             if (!topicService.isUserAllowedOntoTopic(comment.getTopic(), contextProvider.getUser())) {
-                return "redirect:/topics"; //Todo:redirect to some error page (access denied page, e.g.)
+                return "error/accessDeniedPage";
             }
         } else {
             Topic topic = topicService.getTopic(commentOrTopicId);
+            if (topic ==null){
+                logger.error("Tried to add a report on to a null topic with id "+commentOrTopicId);
+                throw new NoHandlerFoundException("GET", "/add/report/" + commentOrTopicId, new HttpHeaders());
+            }
             if (!topicService.isUserAllowedOntoTopic(topic, contextProvider.getUser())) {
-                return "redirect:/topics"; //Todo:redirect to some error page (access denied page, e.g.)
+                return "error/accessDeniedPage";
             }
         }
         reportService.addReport(commentOrTopicId, isComment, reportedUserId, contextProvider.getUser().getId(), causeId);
