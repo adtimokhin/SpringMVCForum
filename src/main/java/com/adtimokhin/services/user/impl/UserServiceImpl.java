@@ -3,10 +3,11 @@ package com.adtimokhin.services.user.impl;
 import com.adtimokhin.enums.Role;
 import com.adtimokhin.models.company.Token;
 import com.adtimokhin.models.user.User;
-import com.adtimokhin.repositories.user.UserNameRepository;
+import com.adtimokhin.models.user.UserName;
+import com.adtimokhin.models.user.UserSurname;
 import com.adtimokhin.repositories.user.UserRepository;
-import com.adtimokhin.repositories.user.UserSurnameRepository;
 import com.adtimokhin.services.company.TokenService;
+import com.adtimokhin.services.user.UserFullNameService;
 import com.adtimokhin.services.user.UserService;
 import com.adtimokhin.utils.EmailSender;
 import com.adtimokhin.utils.TokenGenerator;
@@ -28,16 +29,13 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository repository;
 
-    @Autowired
-    private UserNameRepository userNameRepository;
-
-    @Autowired
-    private UserSurnameRepository userSurnameRepository;
-
 
     //Services
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private UserFullNameService userFullNameService;
 
 
     @Autowired
@@ -65,7 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addUser(User user, Role... roles) {
+    public void addUser(User user, boolean generateRandomName, Role... roles) {
 
         if (user == null) {
             logger.info("Tried to add a null user");
@@ -74,7 +72,9 @@ public class UserServiceImpl implements UserService {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(new HashSet<>(Arrays.asList(roles)));
-        assignUserFullName(user);
+        if (generateRandomName) {
+            assignUserFullName(user);
+        }
         user.setEmailVerificationToken(tokenGenerator.generateEmailVerificationToken());
         repository.save(user);
 
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addOrganizationMember(User user, String tokenValue) {
+    public void addOrganizationMember(User user, String tokenValue, String firstName, String lastName) {
         if (user == null) {
             logger.info("Tried to add a null user as an organization member");
             return;
@@ -91,7 +91,26 @@ public class UserServiceImpl implements UserService {
 
         Token token = tokenService.getToken(tokenValue);
         user.setToken(token);
-        addUser(user, Role.ROLE_ORGANIZATION_MEMBER);
+        addUser(user, false, Role.ROLE_ORGANIZATION_MEMBER);
+        //formatting and setting a real name to the organization member.
+        firstName = userFullNameService.formatNameOrSurname(firstName);
+        lastName = userFullNameService.formatNameOrSurname(lastName);
+
+        UserName userName = userFullNameService.getUserName(firstName);
+        if (userName == null) {
+            userFullNameService.addUserName(firstName);
+            userName = userFullNameService.getUserName(firstName);
+        }
+        user.setUserName(userName);
+
+        UserSurname userSurname = userFullNameService.getUserSurname(lastName);
+        if (userSurname == null) {
+            userFullNameService.addUserSurname(lastName);
+            userSurname = userFullNameService.getUserSurname(lastName);
+        }
+        user.setUserSurname(userSurname);
+
+        repository.save(user);
 
         tokenService.setUser(token, user);
     }
@@ -103,15 +122,14 @@ public class UserServiceImpl implements UserService {
             return;
         }
 
-        //Todo: So that we don't need to recount number of names, we have to assign the size to the services of UserName and UserSurname
-        long countNames = userNameRepository.count();
-        long countSurnames = userSurnameRepository.count();
+        long countNames = userFullNameService.getNumberOfUserNames();
+        long countSurnames = userFullNameService.getNumberOfUserSurnames();
 
         long randomNamePosition = countNames - random.nextInt(Math.toIntExact(countNames));
         long randomSurnamePosition = countSurnames - random.nextInt(Math.toIntExact(countSurnames));
 
-        user.setUserName(userNameRepository.getById(randomNamePosition));
-        user.setUserSurname(userSurnameRepository.getById(randomSurnamePosition));
+        user.setUserName(userFullNameService.getUserName(randomNamePosition));
+        user.setUserSurname(userFullNameService.getUserSurname(randomSurnamePosition));
     }
 
     @Override

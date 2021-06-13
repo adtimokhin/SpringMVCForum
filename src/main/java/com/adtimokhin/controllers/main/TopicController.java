@@ -14,11 +14,13 @@ import com.adtimokhin.services.topic.TopicService;
 import com.adtimokhin.services.user.UserService;
 import com.adtimokhin.utils.validator.TopicValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -62,14 +64,14 @@ public class TopicController {
         // Check that a user that had logged in had ever logged in before.
 
         User user = contextProvider.getUser();
-        if (userService.isFirstTime(user)){
+        if (userService.isFirstTime(user)) {
             userService.setUserEnteredTheForum(user);
             return "redirect:/intro";
         }
 
-        if (isStudent()){
+        if (isStudent()) {
             model.addAttribute("topics", topicService.getAllTopicsForStudents());
-        }else {
+        } else {
             model.addAttribute("topics", topicService.getAllTopics());
         }
         return "main/pages/forumPage";
@@ -77,19 +79,25 @@ public class TopicController {
 
 
     @GetMapping("/topic/{id}")
-    public String getTopic(@PathVariable(name = "id") long id, Model model) {
+    public String getTopic(@PathVariable(name = "id") String stringId, Model model) throws NoHandlerFoundException {
+        int id = 0;
+        try {
+            id = Integer.parseInt(stringId);
+        } catch (NumberFormatException e) {
+            throw new NoHandlerFoundException("GET", "/topic/" + stringId, new HttpHeaders());
+        }
+
         Topic topic = topicService.getTopic(id);
         if (topic == null) {
-            // TODO: throw a 404 error
-            return "redirect:/topics";
+            throw new NoHandlerFoundException("GET", "/topic/" + id, new HttpHeaders());
         }
         if (!topicService.isUserAllowedOntoTopic(topic, contextProvider.getUser())) {
-            return "redirect:/topics";//Todo:redirect to some error page (access denied page, e.g.)
+            return "error/accessDeniedPage";
         }
         List<Comment> comments = commentService.getAllCommentsByTopic(id);
         List<Comment> flaggedComments = commentService.getFlaggedComment(comments);
-        if (flaggedComments != null){
-            model.addAttribute("flaggedComments" , flaggedComments);
+        if (flaggedComments != null) {
+            model.addAttribute("flaggedComments", flaggedComments);
         }
         User user = contextProvider.getUser();
         List<Long> likedCommentIds = likeService.getAllLikedCommentIdsByUser(user, comments);
@@ -100,16 +108,16 @@ public class TopicController {
 
         //some special functionality is only available to a user that have initiated the topic.
         // We need to check if a user that gets the view is the same user that have created the topic
-        if(topicService.isUserCreatedTopic(topic, user)){
-            model.addAttribute("theCreator" , true);
-        }else {
+        if (topicService.isUserCreatedTopic(topic, user)) {
+            model.addAttribute("theCreator", true);
+        } else {
             model.addAttribute("theCreator", false);
         }
 
-        if(topic.isClosed()){
-            model.addAttribute("closed" , true);
-        }else {
-            model.addAttribute("closed" , false);
+        if (topic.isClosed()) {
+            model.addAttribute("closed", true);
+        } else {
+            model.addAttribute("closed", false);
         }
         return "/main/pages/topicPage";
     }
@@ -119,24 +127,39 @@ public class TopicController {
 
     //adding a new topic
     @GetMapping("/add/topic")
-    public String studentAddTopic(Model model) {
-        model.addAttribute("topic", new Topic());
+    public String studentAddTopic() {
+//        model.addAttribute("topic", new Topic());
         return "/main/pages/newTopicPage";
     }
 
-    @PostMapping("/add/topic")
-    public String studentAddTopic(@ModelAttribute Topic topic, BindingResult result) {
-        topicValidator.validate(topic, result);
-        if (result.hasErrors()) {
-            return "/main/pages/newTopicPage"; // Todo: have a look at how errors are displayed.
-        }
-        topicService.addTopic(topic);
-        return "redirect:/topics";
+//    @PostMapping("/add/topic")
+////    public String studentAddTopic(@ModelAttribute Topic topic, BindingResult result) {
+////        topicValidator.validate(topic, result);
+////        if (result.hasErrors()) {
+////            return "/main/pages/newTopicPage"; // Todo: have a look at how errors are displayed.
+////        }
+////        topicService.addTopic(topic);
+////        return "redirect:/topics";
+////
+////    }
 
+    @PostMapping("/add/topic")
+    public String getAddTopic(@RequestParam(name = "topic") String topic,
+                              @RequestParam(name = "description") String description, Model model) {
+        ArrayList<String> errors = topicValidator.validate(topic, description);
+        if (errors != null) {
+            model.addAttribute("errors", errors);
+            return "/main/pages/newTopicPage";
+        }
+        Topic topic1 = new Topic();
+        topic1.setTopic(topic);
+        topic1.setDescription(description);
+        topicService.addTopic(topic1);
+        return "redirect:/topics";
     }
 
     @PostMapping("/update/topic/close")
-    public String closeTopic(@RequestParam(name = "topicId") long topicId){
+    public String closeTopic(@RequestParam(name = "topicId") long topicId) {
         User user = contextProvider.getUser();
         topicService.closeTopic(topicId, user);
         return "redirect:/topics";
@@ -144,7 +167,7 @@ public class TopicController {
 
 
     @PostMapping("/update/topic/open")
-    public String openTopic(@RequestParam(name = "topicId") long topicId){
+    public String openTopic(@RequestParam(name = "topicId") long topicId) {
         User user = contextProvider.getUser();
         topicService.openTopic(topicId, user);
         return "redirect:/topics";
@@ -158,7 +181,7 @@ public class TopicController {
                                     @RequestParam(name = "topicId") long topicId,
                                     @RequestParam(name = "tags", required = false) List<Long> tags) {
 
-        if (!topicService.isUserAllowedOntoTopic(topicService.getTopic(topicId) , contextProvider.getUser())) {
+        if (!topicService.isUserAllowedOntoTopic(topicService.getTopic(topicId), contextProvider.getUser())) {
             return "redirect:/topics"; //Todo:redirect to some error page (access denied page, e.g.)
         }
 
@@ -167,18 +190,19 @@ public class TopicController {
     }
 
     @PostMapping("/update/comment/flag")
-    public String flagComment(@RequestParam(name = "commentId") long commentId){
+    public String flagComment(@RequestParam(name = "commentId") long commentId) {
         commentService.flagComment(commentId, contextProvider.getUser());
         return "redirect:/topics";
     }
+
     // add a like to a comment
     @PostMapping("/add/like")
     public String studentAddLike(@RequestParam(name = "comment") long commentId) {
         Comment comment = commentService.getCommentById(commentId);
-        if (comment == null){
+        if (comment == null) {
             return "redirect:/topics"; //Todo:redirect to some error page (access denied page, e.g.)
         }
-        if (!topicService.isUserAllowedOntoTopic(comment.getTopic() , contextProvider.getUser())) {
+        if (!topicService.isUserAllowedOntoTopic(comment.getTopic(), contextProvider.getUser())) {
             return "redirect:/topics"; //Todo:redirect to some error page (access denied page, e.g.)
         }
         likeService.addLike(contextProvider.getUser(), comment);
@@ -189,10 +213,10 @@ public class TopicController {
     @PostMapping("/remove/like")
     public String studentRemoveLike(@RequestParam(name = "comment") long commentId) {
         Comment comment = commentService.getCommentById(commentId);
-        if (comment == null){
+        if (comment == null) {
             return "redirect:/topics"; //Todo:redirect to some error page (access denied page, e.g.)
         }
-        if (!topicService.isUserAllowedOntoTopic(comment.getTopic() , contextProvider.getUser())) {
+        if (!topicService.isUserAllowedOntoTopic(comment.getTopic(), contextProvider.getUser())) {
             return "redirect:/topics"; //Todo:redirect to some error page (access denied page, e.g.)
         }
         likeService.deleteLike(contextProvider.getUser(), comment);
@@ -206,20 +230,20 @@ public class TopicController {
             @RequestParam(name = "isComment") Boolean isComment,
             @RequestParam(name = "reportedUserId") long reportedUserId,
             @RequestParam(name = "causeId") long causeId
-    ){
+    ) {
         // only is user is allowed on the topic should he/she create a report.
-        if (isComment){
+        if (isComment) {
             Comment comment = commentService.getCommentById(commentOrTopicId);
-            if (!topicService.isUserAllowedOntoTopic(comment.getTopic() , contextProvider.getUser())){
+            if (!topicService.isUserAllowedOntoTopic(comment.getTopic(), contextProvider.getUser())) {
                 return "redirect:/topics"; //Todo:redirect to some error page (access denied page, e.g.)
             }
-        }else {
+        } else {
             Topic topic = topicService.getTopic(commentOrTopicId);
-            if (!topicService.isUserAllowedOntoTopic(topic, contextProvider.getUser())){
+            if (!topicService.isUserAllowedOntoTopic(topic, contextProvider.getUser())) {
                 return "redirect:/topics"; //Todo:redirect to some error page (access denied page, e.g.)
             }
         }
-        reportService.addReport(commentOrTopicId , isComment, reportedUserId, contextProvider.getUser().getId(), causeId);
+        reportService.addReport(commentOrTopicId, isComment, reportedUserId, contextProvider.getUser().getId(), causeId);
         return "redirect:/topics";
     }
 
@@ -228,7 +252,7 @@ public class TopicController {
 
     @PostMapping("add/answer")
     public String addAnswer(@RequestParam(name = "text") String text,
-                            @RequestParam(name = "comment_id") long commentId){
+                            @RequestParam(name = "comment_id") long commentId) {
         answerService.addAnswer(text, contextProvider.getUser(), commentId);
         return "redirect:/topics";
     }

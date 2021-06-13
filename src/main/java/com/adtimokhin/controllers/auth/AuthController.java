@@ -78,9 +78,12 @@ public class AuthController {
 
         if (errors == null) {
             User user = new User(email, password);
-            userService.addUser(user, role);
+            userService.addUser(user,true, role);
         } else {
             model.addAttribute(ERROR_ATTRIBUTE, errors);
+            if(email != null){
+                model.addAttribute("email" , email);
+            }
             return "auth/signUp";
         }
 

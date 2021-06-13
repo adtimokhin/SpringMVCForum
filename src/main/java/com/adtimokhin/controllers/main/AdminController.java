@@ -8,9 +8,11 @@ import com.adtimokhin.services.company.CompanyService;
 import com.adtimokhin.services.report.ReportService;
 import com.adtimokhin.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.List;
 
@@ -42,8 +44,8 @@ public class AdminController {
     }
 
     @GetMapping("get/blockedUsers")
-    public String getBlockedUsers(Model model){
-        model.addAttribute("users" , userService.getAllBannedUsers());
+    public String getBlockedUsers(Model model) {
+        model.addAttribute("users", userService.getAllBannedUsers());
         return "admin/bannedUsersPage";
     }
 
@@ -54,11 +56,17 @@ public class AdminController {
     }
 
     @GetMapping("get/report/{id}")
-    public String getReport(Model model, @PathVariable(name = "id") long reportId) {
+    public String getReport(Model model, @PathVariable(name = "id") String stringId) throws NoHandlerFoundException {
+        int reportId = 0;
+        try {
+            reportId = Integer.parseInt(stringId);
+        } catch (NumberFormatException e) {
+            throw new NoHandlerFoundException("GET", "/admin/get/report/" + stringId, new HttpHeaders());
+        }
+
         Report report = reportService.getReportById(reportId);
         if (report == null) {
-            // Todo: throw some exception
-            return "redirect:admin/home";
+            throw new NoHandlerFoundException("GET", "/admin/get/report/" + reportId, new HttpHeaders());
         }
 
         Comment c = report.getComment();
@@ -71,47 +79,47 @@ public class AdminController {
         model.addAttribute("reportedUser", report.getReportedUser());
         model.addAttribute("reportingUser", report.getReportingUser());
         model.addAttribute("cause", report.getCause());
-        model.addAttribute("reportId" , report.getId());
+        model.addAttribute("reportId", report.getId());
 
         return "admin/fullReport";
     }
 
     @PostMapping("/update/block/user")
     public String banUser(@RequestParam(name = "reason") String reason,
-                          @RequestParam(name = "reportId") long reportId){
-        reportService.banUser(reportService.getReportById(reportId) , reason ,contextProvider.getUser());
+                          @RequestParam(name = "reportId") long reportId) {
+        reportService.banUser(reportService.getReportById(reportId), reason, contextProvider.getUser());
         return "redirect:/admin/home";
 
     }
 
     @PostMapping("/update/unblock/user")
-    public String unBanUser(@RequestParam(name = "userId") long id){
-        reportService.unBanUser(userService.getUser(id) , contextProvider.getUser());
+    public String unBanUser(@RequestParam(name = "userId") long id) {
+        reportService.unBanUser(userService.getUser(id), contextProvider.getUser());
         return "redirect:/admin/home";
     }
 
 
     @GetMapping("get/companies")
-    public String getCompanies(Model model){
+    public String getCompanies(Model model) {
         List<Company> companies = companyService.getAllCompanies();
-        model.addAttribute("companies" , companies);
-        model.addAttribute("verifiable" , false);
+        model.addAttribute("companies", companies);
+        model.addAttribute("verifiable", false);
 
         return "admin/companies";
     }
 
     @GetMapping("get/companies/pending")
-    public String getCompaniesPending(Model model){
+    public String getCompaniesPending(Model model) {
         List<Company> companies = companyService.getAllPendingCompanies();
-        model.addAttribute("companies" , companies);
-        model.addAttribute("verifiable" , true);
+        model.addAttribute("companies", companies);
+        model.addAttribute("verifiable", true);
 
         return "admin/companies";
 
     }
 
     @PostMapping("verify/company")
-    public String verifyCompany(@RequestParam(name = "id") long id){
+    public String verifyCompany(@RequestParam(name = "id") long id) {
         companyService.verifyCompany(contextProvider.getUser(), id);
         return "redirect:/admin/home";
     }

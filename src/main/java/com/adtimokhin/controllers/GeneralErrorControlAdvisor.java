@@ -18,8 +18,8 @@ public class GeneralErrorControlAdvisor {
 
     @ResponseStatus(HttpStatus.NOT_FOUND) // 404
     @ExceptionHandler(NoHandlerFoundException.class)
-    public String exception404() {
-        logger.error("Tried to access page that does not exist.");
+    public String exception404(NoHandlerFoundException e) {
+        logger.error("Tried to access page with url " + e.getRequestURL() + " with http method  " + e.getHttpMethod() + " that does not exist.");
         return "error/404";
     }
 

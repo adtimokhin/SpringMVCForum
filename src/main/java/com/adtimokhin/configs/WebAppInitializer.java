@@ -31,18 +31,8 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
     @Override
     protected FrameworkServlet createDispatcherServlet(WebApplicationContext servletAppContext) {
         DispatcherServlet dispatcherServlet = (DispatcherServlet) super.createDispatcherServlet(servletAppContext);
-//        dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
+        dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
         return dispatcherServlet;
     }
 
-    // Todo: Разобраться с тем, нужно ли делать delete methods или нет. Если да, то этот можно разкомментить.
-
-//    @Override
-//    public void onStartup(ServletContext servletContext) throws ServletException {
-//        super.onStartup(servletContext);
-//    }
-//
-//    private void registerHiddenFieldFilter(ServletContext aContext){
-//        aContext.addFilter("hiddenFiledFilter" , new HiddenHttpMethodFilter()).addMappingForUrlPatterns(null, true, "/*");
-//    }
 }

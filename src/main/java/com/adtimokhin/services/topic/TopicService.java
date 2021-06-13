@@ -35,6 +35,9 @@ public interface TopicService {
     @Nullable
     Topic getTopic(long id);
 
+    @Nullable
+    Topic getTopic(String topic);
+
     List<Topic> getAllTopicsForStudents();
 
     void setTags(Topic topic, String... tags);

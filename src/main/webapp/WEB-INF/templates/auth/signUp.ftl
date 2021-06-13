@@ -7,10 +7,23 @@
 <body>
 
 <div>
+    <#if errors??>
+        <div>
+            <p>Please, check the following:</p>
+            <#list errors as error>
+                <p>${error}</p>
+            </#list>
+        </div>
+    </#if>
     <form method="post" action="/sign_up">
         <div>
             <label>Email</label>
-            <input type="text" name="email">
+
+            <input type="text" name="email"
+                    <#if email??>
+                        value="${email}"
+                    </#if>
+            >
         </div>
         <div>
             <label>Password</label>

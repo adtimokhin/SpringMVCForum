@@ -135,6 +135,12 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
+    public Topic getTopic(String topic) {
+        Topic topic1 = repository.getByTopic(topic);
+        return topic1;
+    }
+
+    @Override
     public List<Topic> getAllTopicsForStudents() {
         Set<Role> roleStudent = Collections.singleton(Role.ROLE_STUDENT);
         Set<Role> roleMember = Collections.singleton(Role.ROLE_ORGANIZATION_MEMBER);

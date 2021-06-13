@@ -36,7 +36,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //TODO: Add an automatic login after the email was verified.
         http.authorizeRequests()
                 .antMatchers("/forum", "/defaultSuccessUrl", "/logout").authenticated()
                 .antMatchers("/sign_up").anonymous()

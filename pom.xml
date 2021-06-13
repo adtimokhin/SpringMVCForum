@@ -24,6 +24,7 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <spring.version>5.3.5</spring.version>
+        <spring.security.version>5.4.5</spring.security.version>
         <aspectj.version>1.9.1</aspectj.version>
         <slf4j.version>1.7.30</slf4j.version>
         <log4j.version>2.14.1</log4j.version>
@@ -63,14 +64,22 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>5.4.5</version>
+            <version>${spring.security.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>5.4.5</version>
+            <version>${spring.security.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>org.freemarker</groupId>
@@ -181,11 +190,25 @@
         </dependency>
 
         <!--Java Mail API-->
-      <dependency>
-        <groupId>javax.mail</groupId>
-        <artifactId>javax.mail-api</artifactId>
-        <version>1.6.2</version>
-      </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>javax.mail-api</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+
+        <!-- Testing-->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.7.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.10.19</version>
+            <scope>test</scope>
+        </dependency>
 
 
     </dependencies>

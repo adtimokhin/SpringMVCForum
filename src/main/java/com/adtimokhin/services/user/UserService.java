@@ -20,10 +20,10 @@ public interface UserService {
     User getUser(long id);
 
     @Transactional
-    void addUser(User user, Role... roles);
+    void addUser(User user,boolean generateRandomName, Role... roles);
 
     @Transactional
-    void addOrganizationMember(User user, String tokenValue);
+    void addOrganizationMember(User user, String tokenValue, String firstName, String lastName);
 
     void assignUserFullName(User user);
 

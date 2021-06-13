@@ -12,4 +12,6 @@ import org.springframework.stereotype.Repository;
 public interface UserNameRepository extends JpaRepository<UserName , Long> {
 
     UserName getById(long id);
+
+    UserName getByName(String name);
 }

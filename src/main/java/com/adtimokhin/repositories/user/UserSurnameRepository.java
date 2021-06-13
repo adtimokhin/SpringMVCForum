@@ -13,4 +13,6 @@ public interface UserSurnameRepository extends JpaRepository<UserSurname, Long> 
 
     UserSurname getById(long id);
 
+    UserSurname getBySurname(String surname);
+
 }
