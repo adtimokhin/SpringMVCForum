@@ -60,12 +60,16 @@ public class CommentServiceImpl implements CommentService {
         comment.setText(text);
         comment.setTopic(topic);
         comment.setTotalLikes(0);
-        if (user.getRoles().contains(Role.ROLE_ORGANIZATION_MEMBER)) {
-            if (!tagIds.contains((long) 4)) {
-                tagIds.add((long) 4);
+        if(tagIds != null) {
+            if (user.getRoles().contains(Role.ROLE_ORGANIZATION_MEMBER)) {
+                if (!tagIds.contains((long) 4)) {
+                    tagIds.add((long) 4);
+                }
             }
+            setTags(comment, tagIds);
         }
-        setTags(comment, tagIds);
+
+        repository.save(comment);
 
     }
 
@@ -114,6 +118,9 @@ public class CommentServiceImpl implements CommentService {
     public void setTags(Comment comment, List<Long> tagIds) {
         if(comment == null){
             logger.info("Tried to set tags to a null comment");
+            return;
+        }
+        if(tagIds == null){
             return;
         }
         if (tagIds.isEmpty()) {
