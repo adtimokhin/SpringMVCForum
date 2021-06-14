@@ -4,12 +4,14 @@ import com.adtimokhin.enums.Role;
 import com.adtimokhin.models.comment.Comment;
 import com.adtimokhin.models.company.Company;
 import com.adtimokhin.models.report.Report;
+import com.adtimokhin.models.topic.Topic;
 import com.adtimokhin.models.user.User;
 import com.adtimokhin.security.ContextProvider;
 import com.adtimokhin.services.company.CompanyService;
 import com.adtimokhin.services.report.ReportService;
 import com.adtimokhin.services.user.UserService;
 import com.adtimokhin.utils.validator.UserValidator;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
@@ -45,6 +47,8 @@ public class AdminController {
     @Autowired
     private UserValidator userValidator;
 
+    final private static Logger logger = Logger.getLogger("admin");
+
     @GetMapping("/home")
     public String test() {
         return "admin/homePage";
@@ -78,7 +82,12 @@ public class AdminController {
 
         Comment c = report.getComment();
         if (c == null) {
-            model.addAttribute("topic", report.getTopic());
+            Topic topic = report.getTopic();
+            if(topic == null){
+                model.addAttribute("answer" , report.getAnswer());
+            }else {
+                model.addAttribute("topic", report.getTopic());
+            }
         } else {
             model.addAttribute("comment", c);
         }
@@ -105,6 +114,12 @@ public class AdminController {
         return "admin/successPage";
     }
 
+    @PostMapping("/update/dismiss/report")
+    public String dismissReport(@RequestParam(name = "reason") String reason,
+                                @RequestParam(name = "reportId") long reportId){
+        reportService.dismissReport(reportId , reason , contextProvider.getUser());
+        return "admin/successPage";
+    }
 
     @GetMapping("get/companies")
     public String getCompanies(Model model) {
@@ -156,24 +171,3 @@ public class AdminController {
         return "admin/successPage";
     }
 }
-
-
-//    <div>
-//            <label>Email</label>
-//
-//            <input type="text" name="email"
-//                    <#if email??>
-//                        value="${email}"
-//                    </#if>
-//            >
-//        </div>
-//        <div>
-//            <label>Password</label>
-//            <input type="password" name="password">
-//        </div>
-//        <div>
-//            <label>Re-enter your password</label>
-//            <input type="password" name="secondPassword">
-//        </div>
-//        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-//        <input type="submit">

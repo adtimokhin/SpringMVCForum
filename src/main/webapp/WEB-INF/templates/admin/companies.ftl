@@ -36,6 +36,8 @@
                     <div>
                         <form action="/admin/verify/company" method="post">
                             <input type="hidden" value="${c.getId()}" name="id">
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+
                             <input type="submit" value="verify">
                         </form>
                     </div>

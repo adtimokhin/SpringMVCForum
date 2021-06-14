@@ -1,7 +1,9 @@
 package com.adtimokhin.aspect;
 
+import com.adtimokhin.models.comment.Answer;
 import com.adtimokhin.models.comment.Comment;
 import com.adtimokhin.models.report.Report;
+import com.adtimokhin.models.topic.Topic;
 import com.adtimokhin.models.user.User;
 import org.apache.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
@@ -38,14 +40,27 @@ public class LogAdminAspect {
 
         Comment comment = report.getComment();
         if (comment == null) {
-            System.out.println("REPORT ID:" + report.getId() + " REPORT ON " + report.getReportedUser().getId() +
-                    " BY " + report.getReportingUser().getId() + " ON ISSUE OF " + report.getCause() + " IN TOPIC "
-                    + report.getTopic().getId() + " WAS SOLVED BY ADMIN " + admin.getId() +
-                    ". REPORTED USER WAS BANNED. REASON:" + reason);
-            logger.info("REPORT ID:" + report.getId() + " REPORT ON " + report.getReportedUser().getId() +
-                    " BY " + report.getReportingUser().getId() + " ON ISSUE OF " + report.getCause() + " IN TOPIC "
-                    + report.getTopic().getId() + " WAS SOLVED BY ADMIN " + admin.getId() +
-                    ". REPORTED USER WAS BANNED. REASON:" + reason);
+            Topic topic = report.getTopic();
+            if(topic == null){
+                Answer answer = report.getAnswer();
+                System.out.println("REPORT ID:" + report.getId() + " REPORT ON " + report.getReportedUser().getId() +
+                        " BY " + report.getReportingUser().getId() + " ON ISSUE OF " + report.getCause() + " IN TOPIC "
+                        + answer.getId() + " WAS SOLVED BY ADMIN " + admin.getId() +
+                        ". REPORTED USER WAS BANNED. REASON:" + reason);
+                logger.info("REPORT ID:" + report.getId() + " REPORT ON " + report.getReportedUser().getId() +
+                        " BY " + report.getReportingUser().getId() + " ON ISSUE OF " + report.getCause() + " IN TOPIC "
+                        + answer.getId() + " WAS SOLVED BY ADMIN " + admin.getId() +
+                        ". REPORTED USER WAS BANNED. REASON:" + reason);
+            }else {
+                System.out.println("REPORT ID:" + report.getId() + " REPORT ON " + report.getReportedUser().getId() +
+                        " BY " + report.getReportingUser().getId() + " ON ISSUE OF " + report.getCause() + " IN TOPIC "
+                        + topic.getId() + " WAS SOLVED BY ADMIN " + admin.getId() +
+                        ". REPORTED USER WAS BANNED. REASON:" + reason);
+                logger.info("REPORT ID:" + report.getId() + " REPORT ON " + report.getReportedUser().getId() +
+                        " BY " + report.getReportingUser().getId() + " ON ISSUE OF " + report.getCause() + " IN TOPIC "
+                        + topic.getId() + " WAS SOLVED BY ADMIN " + admin.getId() +
+                        ". REPORTED USER WAS BANNED. REASON:" + reason);
+            }
         } else {
             System.out.println("REPORT ID:" + report.getId() + " REPORT ON " + report.getReportedUser().getId() +
                     " BY " + report.getReportingUser().getId() + " ON ISSUE OF " + report.getCause() + " IN COMMENT"

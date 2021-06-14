@@ -226,6 +226,7 @@
                                 <p>Not liked</p>
                                 <form method="post" action="/add/like">
                                     <input type="hidden" name="comment" value="${comment.getId()}">
+                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
                                     <input type="submit" value="Like">
                                 </form>
                             </div>
@@ -236,19 +237,37 @@
                             <div>
                                 <form method="post" action="/remove/like">
                                     <input hidden name="comment" value="${comment.getId()}">
+                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
                                     <input type="submit" value="Unlike">
                                 </form>
                             </div>
                         </#if>
                     </#if>
                     <div>
-                        <form method="post" action="/add/report">
-                            <input type="hidden" name="commentOrTopicId" value="${comment.getId()}">
-                            <input type="hidden" name="isComment" value="true">
-                            <input type="hidden" name="reportedUserId" value="${comment.getUser().getId()}">
-                            <input type="hidden" name="causeId" value="1">
-                            <input type="submit" value="Report">
-                        </form>
+                        <#if userId != comment.getUser().getId()>
+                            <form method="post" action="/add/report">
+                                <input type="hidden" name="id" value="${comment.getId()}">
+                                <input type="hidden" name="textType" value="1">
+                                <input type="hidden" name="reportedUserId" value="${comment.getUser().getId()}">
+                                <input type="hidden" name="causeId" value="1">
+                                <div>
+                                    <#list causes as cause>
+                                        <p>${cause.getTitle()}</p>
+                                        <label>
+                                            <input type="radio" name="causeId" value="${cause.getTitle()}">
+                                        </label>
+                                    </#list>
+                                    <label>
+                                        Add your own reason
+                                        <input type="text" name="causeId" value="">
+                                        <!-- TODO: when will be working with js, make sure that when a text is typed
+                                         into this field, all radio buttons should be deselected. -->
+                                    </label>
+                                </div>
+                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+                                <input type="submit" value="Report">
+                            </form>
+                        </#if>
                     </div>
                 </td>
                 <#if closed == false>
@@ -266,6 +285,29 @@
                 <td>
                     <#list comment.getAnswers() as answer>
                         <p>${answer.getText()}</p>
+                        <#if userId != answer.getUser().getId()>
+                            <form method="post" action="/add/report">
+                                <input type="hidden" name="id" value="${answer.getId()}">
+                                <input type="hidden" name="textType" value="3">
+                                <input type="hidden" name="reportedUserId" value="${comment.getUser().getId()}">
+                                <div>
+                                    <#list causes as cause>
+                                        <p>${cause.getTitle()}</p>
+                                        <label>
+                                            <input type="radio" name="causeId" value="${cause.getTitle()}">
+                                        </label>
+                                    </#list>
+                                    <label>
+                                        Add your own reason
+                                        <input type="text" name="causeId" value="">
+                                        <!-- TODO: when will be working with js, make sure that when a text is typed
+                                         into this field, all radio buttons should be deselected. -->
+                                    </label>
+                                </div>
+                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+                                <input type="submit" value="Report">
+                            </form>
+                        </#if>
                     </#list>
                     <#if closed == false>
                         <div>
@@ -273,6 +315,7 @@
                                 <input type="text" name="text">
                                 <input type="hidden" name="comment_id" value="${comment.getId()}">
                                 <input type="submit" value="Add an answer, mate.">
+                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
                             </form>
                         </div>
                     </#if>

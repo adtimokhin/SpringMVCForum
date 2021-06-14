@@ -2,6 +2,7 @@ package com.adtimokhin.controllers.main;
 
 import com.adtimokhin.enums.Role;
 import com.adtimokhin.models.comment.Comment;
+import com.adtimokhin.models.report.Cause;
 import com.adtimokhin.models.topic.Topic;
 import com.adtimokhin.models.user.User;
 import com.adtimokhin.security.ContextProvider;
@@ -9,6 +10,7 @@ import com.adtimokhin.services.comment.AnswerService;
 import com.adtimokhin.services.comment.CommentService;
 import com.adtimokhin.services.comment.impl.CommentTagsServiceImpl;
 import com.adtimokhin.services.like.LikeService;
+import com.adtimokhin.services.report.CauseService;
 import com.adtimokhin.services.report.ReportService;
 import com.adtimokhin.services.topic.TopicService;
 import com.adtimokhin.services.user.UserService;
@@ -60,6 +62,9 @@ public class TopicController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private CauseService causeService;
+
     private static final Logger logger = Logger.getLogger("file");
 
 
@@ -109,6 +114,7 @@ public class TopicController {
         model.addAttribute("topic", topic);
         model.addAttribute("comments", comments);
         model.addAttribute("commentTags", tagsService.getAllCommentTags());
+        model.addAttribute("userId" , user.getId());
 
         //some special functionality is only available to a user that have initiated the topic.
         // We need to check if a user that gets the view is the same user that have created the topic
@@ -123,6 +129,7 @@ public class TopicController {
         } else {
             model.addAttribute("closed", false);
         }
+        model.addAttribute("causes", causeService.getAllBasicCauses());
         return "/main/pages/topicPage";
     }
 
@@ -217,35 +224,49 @@ public class TopicController {
     }
 
     // working with reports and bans
+
+    /**
+     * 1-comment
+     * 2-topic
+     * 3-answer
+     **/
     @PostMapping("add/report")
     public String addReport(
-            @RequestParam(name = "commentOrTopicId") long commentOrTopicId,
-            @RequestParam(name = "isComment") Boolean isComment,
+            @RequestParam(name = "id") long id,
+            @RequestParam(name = "textType") int textType,
             @RequestParam(name = "reportedUserId") long reportedUserId,
-            @RequestParam(name = "causeId") long causeId
+            @RequestParam(name = "causeId") String causeId
     ) throws NoHandlerFoundException {
+
+        if (causeId == null) {
+            return "main/pages/failurePage";
+        }
+        if (causeId.isEmpty()) {
+            return "main/pages/failurePage";
+        }
         // only is user is allowed on the topic should he/she create a report.
-        if (isComment) {
-            Comment comment = commentService.getCommentById(commentOrTopicId);
-            if (comment ==null){
-                logger.error("Tried to add a report on to a null comment with id "+commentOrTopicId);
-                throw new NoHandlerFoundException("GET", "/add/report/" + commentOrTopicId, new HttpHeaders());
+        if (textType == 1) {
+            Comment comment = commentService.getCommentById(id);
+            if (comment == null) {
+                logger.error("Tried to add a report on to a null comment with id " + id);
+                throw new NoHandlerFoundException("GET", "/add/report/" + id, new HttpHeaders());
             }
             if (!topicService.isUserAllowedOntoTopic(comment.getTopic(), contextProvider.getUser())) {
                 return "error/accessDeniedPage";
             }
-        } else {
-            Topic topic = topicService.getTopic(commentOrTopicId);
-            if (topic ==null){
-                logger.error("Tried to add a report on to a null topic with id "+commentOrTopicId);
-                throw new NoHandlerFoundException("GET", "/add/report/" + commentOrTopicId, new HttpHeaders());
+        } else if (textType == 2) {
+            Topic topic = topicService.getTopic(id);
+            if (topic == null) {
+                logger.error("Tried to add a report on to a null topic with id " + id);
+                throw new NoHandlerFoundException("GET", "/add/report/" + id, new HttpHeaders());
             }
             if (!topicService.isUserAllowedOntoTopic(topic, contextProvider.getUser())) {
                 return "error/accessDeniedPage";
             }
         }
-        reportService.addReport(commentOrTopicId, isComment, reportedUserId, contextProvider.getUser().getId(), causeId);
-        return "redirect:/topics";
+        Cause cause = causeService.getOrAddCause(causeId);
+        reportService.addReport(id, textType, reportedUserId, contextProvider.getUser().getId(), cause);
+        return "main/pages/successPage";
     }
 
 

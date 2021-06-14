@@ -11,6 +11,7 @@
         <div>
             <form action="/update/topic/open" method="post">
                 <input type="hidden" name="topicId" value="${topic.id}">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
                 <input type="submit" value="Open the discussion again.">
             </form>
         </div>
@@ -18,6 +19,7 @@
         <div>
             <form action="/update/topic/close" method="post">
                 <input type="hidden" name="topicId" value="${topic.id}">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
                 <input type="submit" value="Close the discussion">
             </form>
         </div>
@@ -33,13 +35,30 @@
         ${topic.user.getFullName()}
     </p>
     <div>
-        <form method="post" action="/add/report">
-            <input type="hidden" name="commentOrTopicId" value="${topic.getId()}">
-            <input type="hidden" name="isComment" value="false">
-            <input type="hidden" name="reportedUserId" value="${topic.getUser().getId()}">
-            <input type="hidden" name="causeId" value="1">
-            <input type="submit" value="Report">
-        </form>
+        <#if userId != topic.getUser().getId()>
+            <form method="post" action="/add/report">
+                <input type="hidden" name="id" value="${topic.getId()}">
+                <input type="hidden" name="textType" value="2">
+                <input type="hidden" name="reportedUserId" value="${topic.getUser().getId()}">
+                <#--            <input type="hidden" name="causeId" value="1">-->
+                <div>
+                    <#list causes as cause>
+                        <p>${cause.getTitle()}</p>
+                        <label>
+                            <input type="radio" name="causeId" value="${cause.getTitle()}">
+                        </label>
+                    </#list>
+                    <label>
+                        Add your own reason
+                        <input type="text" name="causeId" value="">
+                        <!-- TODO: when will be working with js, make sure that when a text is typed
+                         into this field, all radio buttons should be deselected. -->
+                    </label>
+                </div>
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+                <input type="submit" value="Report">
+            </form>
+        </#if>
     </div>
 </div>
 
@@ -63,6 +82,7 @@
                     <label for="${tag.getId()}">${tag.getTagName()}</label>
                 </#list>
             </div>
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
             <input type="submit">
         </form>
     </div>

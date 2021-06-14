@@ -18,4 +18,6 @@ public interface AnswerService {
 
     List<Answer> getAllAnswersByCommentId(long commentId);
 
+    Answer getAnswer(long id);
+
 }

@@ -1,5 +1,6 @@
 package com.adtimokhin.models.report;
 
+import com.adtimokhin.models.comment.Answer;
 import com.adtimokhin.models.comment.Comment;
 import com.adtimokhin.models.topic.Topic;
 import com.adtimokhin.models.user.User;
@@ -44,4 +45,8 @@ public class Report {
     @ManyToOne
     @JoinColumn(name = "cause_id")
     private Cause cause;
+
+    @ManyToOne
+    @JoinColumn(name = "answer_id")
+    private Answer answer;
 }

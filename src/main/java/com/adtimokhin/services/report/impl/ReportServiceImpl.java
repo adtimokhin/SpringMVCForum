@@ -1,11 +1,16 @@
 package com.adtimokhin.services.report.impl;
 
 import com.adtimokhin.enums.Role;
+import com.adtimokhin.models.comment.Answer;
+import com.adtimokhin.models.comment.Comment;
+import com.adtimokhin.models.report.Cause;
 import com.adtimokhin.models.report.Report;
+import com.adtimokhin.models.topic.Topic;
 import com.adtimokhin.models.user.User;
-import com.adtimokhin.repositories.report.CauseRepository;
 import com.adtimokhin.repositories.report.ReportRepository;
+import com.adtimokhin.services.comment.AnswerService;
 import com.adtimokhin.services.comment.CommentService;
+import com.adtimokhin.services.report.CauseService;
 import com.adtimokhin.services.report.ReportService;
 import com.adtimokhin.services.topic.TopicService;
 import com.adtimokhin.services.user.UserService;
@@ -26,10 +31,6 @@ public class ReportServiceImpl implements ReportService {
     @Autowired
     private ReportRepository repository;
 
-    @Autowired
-    private CauseRepository causeRepository;
-
-
     //Services
     @Autowired
     private UserService userService;
@@ -39,6 +40,12 @@ public class ReportServiceImpl implements ReportService {
 
     @Autowired
     private TopicService topicService;
+
+    @Autowired
+    private AnswerService answerService;
+
+    @Autowired
+    private CauseService causeService;
 
 
     private static final Logger logger = Logger.getLogger("file");
@@ -69,19 +76,24 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public void addReport(long commentOrTopicId, boolean isComment, long reportedUserId, long reportingUserId,
-                          long causeId) {
+    public void addReport(long commentOrTopicId, int textType, long reportedUserId, long reportingUserId,
+                          Cause cause) {
         Report report = new Report();
 
-        if (isComment) {
+        if (textType == 1) {
             report.setComment(commentService.getCommentById(commentOrTopicId));
-        } else {
+        } else if (textType == 2) {
             report.setTopic(topicService.getTopic(commentOrTopicId));
+        } else if (textType == 3) {
+            report.setAnswer(answerService.getAnswer(commentOrTopicId));
+        } else {
+            logger.info("Tried to add a report to a neither comment, topic, nor answer. reportedUserId:" + reportedUserId + " reportingUserId:" + reportingUserId + " cause" + cause.getTitle());
+            return;
         }
 
         report.setReportedUser(userService.getUser(reportedUserId));
         report.setReportingUser(userService.getUser(reportingUserId));
-        report.setCause(causeRepository.findById(causeId));
+        report.setCause(cause);
 
         repository.save(report);
     }
@@ -121,5 +133,60 @@ public class ReportServiceImpl implements ReportService {
         } else {
             logger.info("A user with id " + admin.getId() + " tried to unban user with id " + user.getId() + ", though that user was not an ADMIN");
         }
+    }
+
+    @Override
+    public void dismissReport(long reportId, String reason, User user) {
+        if (user == null) {
+            logger.info("Null user tried to dismiss a report with id " + reportId);
+            adminLogger.info("The report was malformed");
+            return;
+        }
+        Report report = getReportById(reportId);
+        if (report == null) {
+            logger.info("User with id " + user.getId() + " tried to ban another user");
+            adminLogger.info("The report was malformed");
+            return;
+        }
+        if (user.getRoles().contains(Role.ROLE_ADMIN)) {
+            Comment comment = report.getComment();
+            if (comment == null) {
+                Topic topic = report.getTopic();
+                if (topic == null) { //todo: move it to some other place. There is just too much of the logging messages.
+                    Answer answer = report.getAnswer();
+                    System.out.println("REPORT ID:" + report.getId() + " REPORT ON " + report.getReportedUser().getId() +
+                            " BY " + report.getReportingUser().getId() + " ON ISSUE OF " + report.getCause() + " IN ANSWER "
+                            + answer.getId() + " WAS SOLVED BY ADMIN " + user.getId() +
+                            ". REPORTED USER WAS BANNED. REASON:" + reason);
+                    logger.info("REPORT ID:" + report.getId() + " REPORT ON " + report.getReportedUser().getId() +
+                            " BY " + report.getReportingUser().getId() + " ON ISSUE OF " + report.getCause() + " IN ANSWER "
+                            + answer.getId() + " WAS SOLVED BY ADMIN " + user.getId() +
+                            ". REPORTED USER WAS BANNED. REASON:" + reason);
+                } else {
+                    System.out.println("REPORT ID:" + report.getId() + " REPORT ON " + report.getReportedUser().getId() +
+                            " BY " + report.getReportingUser().getId() + " ON ISSUE OF " + report.getCause() + " IN TOPIC "
+                            + topic.getId() + " WAS SOLVED BY ADMIN " + user.getId() +
+                            ". REPORTED USER WAS BANNED. REASON:" + reason);
+                    logger.info("REPORT ID:" + report.getId() + " REPORT ON " + report.getReportedUser().getId() +
+                            " BY " + report.getReportingUser().getId() + " ON ISSUE OF " + report.getCause() + " IN TOPIC "
+                            + topic.getId() + " WAS SOLVED BY ADMIN " + user.getId() +
+                            ". REPORTED USER WAS BANNED. REASON:" + reason);
+                }
+            } else {
+                System.out.println("REPORT ID:" + report.getId() + " REPORT ON " + report.getReportedUser().getId() +
+                        " BY " + report.getReportingUser().getId() + " ON ISSUE OF " + report.getCause() + " IN COMMENT"
+                        + comment.getId() + " WAS SOLVED BY ADMIN " + user.getId() +
+                        ". REPORTED USER WAS BANNED. REASON:" + reason);
+                logger.info("REPORT ID:" + report.getId() + " REPORT ON " + report.getReportedUser().getId() +
+                        " BY " + report.getReportingUser().getId() + " ON ISSUE OF " + report.getCause() + " IN COMMENT"
+                        + comment.getId() + " WAS SOLVED BY ADMIN " + user.getId() +
+                        ". REPORTED USER WAS BANNED. REASON:" + reason);
+            }
+            repository.delete(report);
+        } else {
+            logger.info("A user with id " + user.getId() + " tried to dismiss a report with id " + report.getId() + " thought that user is not an ADMIN");
+            adminLogger.info("The report was malformed");
+        }
+
     }
 }

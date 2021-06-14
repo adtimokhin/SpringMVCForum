@@ -1,10 +1,12 @@
 package com.adtimokhin.models.comment;
 
+import com.adtimokhin.models.report.Report;
 import com.adtimokhin.models.user.User;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * @author adtimokhin
@@ -31,5 +33,8 @@ public class Answer {
     @ManyToOne
     @JoinColumn(name = "comment_id")
     private Comment comment;
+
+    @OneToMany(mappedBy = "answer")
+    private List<Report> reports;
 
 }

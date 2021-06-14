@@ -17,4 +17,6 @@ public interface AnswerRepository extends JpaRepository<Answer , Long> {
 
     List<Answer> getAllByComment(Comment comment);
 
+    Answer findById(long id);
+
 }

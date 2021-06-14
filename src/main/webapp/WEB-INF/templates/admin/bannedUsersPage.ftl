@@ -17,6 +17,8 @@
                 <div>
                     <form action="/admin/update/unblock/user" method="post">
                         <input type="hidden" name="userId" value="${user.getId()}">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+
                         <input type="submit">
                     </form>
                 </div>

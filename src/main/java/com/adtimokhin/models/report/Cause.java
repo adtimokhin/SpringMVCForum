@@ -27,4 +27,6 @@ public class Cause {
     @OneToMany(mappedBy = "cause")
     private List<Report> reports;
 
+    @Column(name = "cause_basic")
+    private boolean basic;
 }

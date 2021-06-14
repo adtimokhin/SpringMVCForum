@@ -6,6 +6,7 @@ import com.adtimokhin.models.user.User;
 import com.adtimokhin.models.user.UserName;
 import com.adtimokhin.models.user.UserSurname;
 import com.adtimokhin.repositories.user.UserRepository;
+import com.adtimokhin.security.ContextProvider;
 import com.adtimokhin.services.company.TokenService;
 import com.adtimokhin.services.user.UserFullNameService;
 import com.adtimokhin.services.user.UserService;
@@ -41,7 +42,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private Random random = new Random();
+    @Autowired
+    private ContextProvider contextProvider;
+
 
     @Autowired
     private TokenGenerator tokenGenerator;
@@ -51,6 +54,8 @@ public class UserServiceImpl implements UserService {
 
     private static final Logger logger = Logger.getLogger("file");
     private static final Logger adminLogger = Logger.getLogger("admin");
+
+    private Random random = new Random();
 
     @Override
     public User getUser(String email) {
@@ -242,7 +247,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void setRole(User user, Role role) {
-        user.setRoles(Collections.singleton(role));
-        repository.save(user);
+        if (role.equals(Role.ROLE_ADMIN)) {
+            User u = contextProvider.getUser();
+            if (u.getRoles().contains(Role.ROLE_ADMIN)) {
+                user.setRoles(Collections.singleton(role));
+                repository.save(user);
+                adminLogger.info("Admin with id " + u.getId() + " had promoted user with id " + user.getId() + " to become an admin");
+            } else {
+                logger.info("User with id " + u.getId() + " tried to promote user with id " + user.getId() + " to become an admin");
+            }
+        } else {
+            user.setRoles(Collections.singleton(role));
+            repository.save(user);
+            logger.info("User with id " + user.getId() + " got the role changed to " + role.getRole());
+        }
     }
 }

@@ -67,4 +67,9 @@ public class AnswerServiceImpl implements AnswerService {
 
         return repository.getAllByComment(comment);
     }
+
+    @Override
+    public Answer getAnswer(long id) {
+        return repository.findById(id);
+    }
 }

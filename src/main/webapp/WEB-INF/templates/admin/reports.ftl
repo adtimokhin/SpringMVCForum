@@ -9,6 +9,7 @@
     <tr>
         <td>comment id</td>
         <td>topic id</td>
+        <td>answer id</td>
         <td>reported user</td>
         <td>reporting user</td>
         <td>cause</td>
@@ -20,9 +21,17 @@
             <#if report.getComment()??>
                 <td>${report.getComment().getId()}</td>
                 <td>____</td>
-                <#else>
+                <td>____</td>
+            <#else>
+                <#if report.getTopic()??>
                     <td>____</td>
                     <td>${report.getTopic().getId()}</td>
+                    <td>____</td>
+                <#else>
+                    <td>____</td>
+                    <td>____</td>
+                    <td>${report.getAnswer().getId()}</td>
+                </#if>
             </#if>
             <td>${report.getReportedUser().getFullName()}</td>
             <td>${report.getReportingUser().getFullName()}</td>
