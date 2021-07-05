@@ -60,7 +60,7 @@ public class UserValidator {
     }
 
 
-    private static boolean isPasswordValid(String password) {
+    public static boolean isPasswordValid(String password) {
         //Todo: когда будет потребность, освой regular expressions, и перепиши этот метод с их участем
         //Matcher matcher = passwordPattern.matcher(password);
         //return matcher.matches();

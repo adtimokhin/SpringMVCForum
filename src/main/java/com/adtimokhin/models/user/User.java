@@ -86,6 +86,9 @@ public class User {
     @Column(name = "email_verification_token")
     private String emailVerificationToken;
 
+    @Column(name = "rating")
+    private int rating;
+
 
     public User(String email, String password) {
         this.email = email;

@@ -26,6 +26,8 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.adtimokhin.utils.RatingCounter.*;
+
 /**
  * @author adtimokhin
  * 09.06.2021
@@ -114,7 +116,7 @@ public class TopicController {
         model.addAttribute("topic", topic);
         model.addAttribute("comments", comments);
         model.addAttribute("commentTags", tagsService.getAllCommentTags());
-        model.addAttribute("userId" , user.getId());
+        model.addAttribute("userId", user.getId());
 
         //some special functionality is only available to a user that have initiated the topic.
         // We need to check if a user that gets the view is the same user that have created the topic
@@ -155,6 +157,7 @@ public class TopicController {
         topic1.setTopic(topic);
         topic1.setDescription(description);
         topicService.addTopic(topic1);
+        userService.increaseUserRating(contextProvider.getUser(), TOPIC_RATING);
         return "redirect:/topics";
     }
 
@@ -186,6 +189,7 @@ public class TopicController {
         }
 
         commentService.addComment(msg, topicId, tags);
+        userService.increaseUserRating(contextProvider.getUser(), COMMENT_RATING);
         return "redirect:/topic/" + topicId;
     }
 
@@ -206,6 +210,7 @@ public class TopicController {
             return "error/accessDeniedPage";
         }
         likeService.addLike(contextProvider.getUser(), comment);
+        userService.increaseUserRating(comment.getUser(), LIKE_RATING);
         return "redirect:/topics";
     }
 
@@ -220,6 +225,7 @@ public class TopicController {
             return "error/accessDeniedPage";
         }
         likeService.deleteLike(contextProvider.getUser(), comment);
+        userService.increaseUserRating(comment.getUser(), UNLIKE_RATING);
         return "redirect:/topics";
     }
 
@@ -265,7 +271,9 @@ public class TopicController {
             }
         }
         Cause cause = causeService.getOrAddCause(causeId);
-        reportService.addReport(id, textType, reportedUserId, contextProvider.getUser().getId(), cause);
+        User reportingUser = contextProvider.getUser();
+        reportService.addReport(id, textType, reportedUserId, reportingUser.getId(), cause);
+        userService.increaseUserRating(reportingUser, REPORT_RATING);
         return "main/pages/successPage";
     }
 
@@ -275,7 +283,9 @@ public class TopicController {
     @PostMapping("add/answer")
     public String addAnswer(@RequestParam(name = "text") String text,
                             @RequestParam(name = "comment_id") long commentId) {
-        answerService.addAnswer(text, contextProvider.getUser(), commentId);
+        User user = contextProvider.getUser();
+        answerService.addAnswer(text, user, commentId);
+        userService.increaseUserRating(user, ANSWER_RATING);
         return "redirect:/topics";
     }
 

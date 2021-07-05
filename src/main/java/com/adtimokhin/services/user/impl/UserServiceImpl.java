@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+import static com.adtimokhin.utils.validator.UserValidator.isPasswordValid;
+
 /**
  * @author adtimokhin
  * 10.04.2021
@@ -127,14 +129,42 @@ public class UserServiceImpl implements UserService {
             return;
         }
 
+        user.setUserName(getRandomUserName());
+        user.setUserSurname(getRandomUserSurname());
+    }
+
+    @Override
+    public UserName getRandomUserName() {
         long countNames = userFullNameService.getNumberOfUserNames();
-        long countSurnames = userFullNameService.getNumberOfUserSurnames();
-
         long randomNamePosition = countNames - random.nextInt(Math.toIntExact(countNames));
-        long randomSurnamePosition = countSurnames - random.nextInt(Math.toIntExact(countSurnames));
+        return userFullNameService.getUserName(randomNamePosition);
 
-        user.setUserName(userFullNameService.getUserName(randomNamePosition));
-        user.setUserSurname(userFullNameService.getUserSurname(randomSurnamePosition));
+    }
+
+    @Override
+    public UserSurname getRandomUserSurname() {
+        long countSurnames = userFullNameService.getNumberOfUserSurnames();
+        long randomSurnamePosition = countSurnames - random.nextInt(Math.toIntExact(countSurnames));
+        return userFullNameService.getUserSurname(randomSurnamePosition);
+    }
+
+    @Override
+    public void safeNewName(User user, UserName userName, UserSurname userSurname) {
+        if (user == null) {
+            logger.info("Tried to assign a new full name to a null user");
+            return;
+        }
+        if (userName == null) {
+            logger.info("Tried to assign null UserName");
+            return;
+        }
+        if (userSurname == null) {
+            logger.info("Tried to assign null UserSurname");
+            return;
+        }
+        user.setUserName(userName);
+        user.setUserSurname(userSurname);
+        repository.save(user);
     }
 
     @Override
@@ -261,5 +291,38 @@ public class UserServiceImpl implements UserService {
             repository.save(user);
             logger.info("User with id " + user.getId() + " got the role changed to " + role.getRole());
         }
+    }
+
+    @Override
+    public void changePassword(User user, String password) {
+        //TODO: add later email "sentage" to user's email that tells that his password was changed.
+        if (user == null) {
+            logger.info("Tried to change password for a null user");
+            return;
+        }
+        if (password == null) {
+            logger.info("Tried to change password for a user with id " + user.getId() + " to null");
+            return;
+        }
+        if (!isPasswordValid(password)) {
+            logger.info("Tried to change password for a user with id " + user.getId() + " to a password that does not match the security requirements");
+            return;
+        }
+        user.setPassword(passwordEncoder.encode(password));
+        repository.save(user);
+
+        logger.info("User with id" + user.getId() + " had changed his/her password.");
+
+    }
+
+    @Override
+    public void increaseUserRating(User user, int rating) {
+        if (user == null) {
+            logger.info("Tried to increase rating for a null user");
+            return;
+        }
+
+        user.setRating(user.getRating() + rating);
+        repository.save(user);
     }
 }

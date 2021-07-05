@@ -2,6 +2,8 @@ package com.adtimokhin.services.user;
 
 import com.adtimokhin.enums.Role;
 import com.adtimokhin.models.user.User;
+import com.adtimokhin.models.user.UserName;
+import com.adtimokhin.models.user.UserSurname;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,13 @@ public interface UserService {
 
     void assignUserFullName(User user);
 
+    UserName getRandomUserName();
+
+    UserSurname getRandomUserSurname();
+
+    @Transactional
+    void safeNewName(User user, UserName userName, UserSurname userSurname);
+
     @Transactional
     void deleteUser(User user);
 
@@ -49,5 +58,12 @@ public interface UserService {
     boolean verifyEmail(String token);
 
     void setRole(User user, Role role);
+
+    @Transactional
+    void changePassword(User user, String password);
+
+
+    @Transactional
+    void increaseUserRating(User user, int rating);
 
 }
