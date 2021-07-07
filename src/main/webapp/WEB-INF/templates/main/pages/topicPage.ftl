@@ -33,6 +33,7 @@
     <p>Post by:</p>
     <p>
         ${topic.user.getFullName()}
+        ${topic.user.getRatingStatus().getName()}
     </p>
     <div>
         <#if userId != topic.getUser().getId()>

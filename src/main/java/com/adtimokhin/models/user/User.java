@@ -89,6 +89,9 @@ public class User {
     @Column(name = "rating")
     private int rating;
 
+    @ManyToOne
+    @JoinColumn(name = "rating_status_id")
+    private Rating ratingStatus;
 
     public User(String email, String password) {
         this.email = email;

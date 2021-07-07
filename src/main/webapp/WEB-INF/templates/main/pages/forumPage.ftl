@@ -13,7 +13,7 @@
     <#list topics as topic>
         <tr>
             <td>${topic.topic}</td>
-            <td>${topic.user.getFullName()}</td>
+            <td>${topic.user.getFullName()} ${topic.user.getRatingStatus().getName()}</td>
             <td><a href="/topic/${topic.id}">Enter discussion</a></td>
         </tr>
     </#list>

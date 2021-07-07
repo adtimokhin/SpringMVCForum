@@ -2,9 +2,11 @@ package com.adtimokhin.services.user.impl;
 
 import com.adtimokhin.enums.Role;
 import com.adtimokhin.models.company.Token;
+import com.adtimokhin.models.user.Rating;
 import com.adtimokhin.models.user.User;
 import com.adtimokhin.models.user.UserName;
 import com.adtimokhin.models.user.UserSurname;
+import com.adtimokhin.repositories.user.RatingRepository;
 import com.adtimokhin.repositories.user.UserRepository;
 import com.adtimokhin.security.ContextProvider;
 import com.adtimokhin.services.company.TokenService;
@@ -31,6 +33,9 @@ public class UserServiceImpl implements UserService {
     //Repositories
     @Autowired
     private UserRepository repository;
+
+    @Autowired
+    private RatingRepository ratingRepository;
 
 
     //Services
@@ -322,7 +327,18 @@ public class UserServiceImpl implements UserService {
             return;
         }
 
-        user.setRating(user.getRating() + rating);
+        int newRating = user.getRating() + rating;
+        user.setRating(newRating);
+
+        Rating currentRatingStatus = user.getRatingStatus();
+        if(newRating > currentRatingStatus.getMaxRating()){
+            //change rating
+            Rating newRatingStatus = ratingRepository.findByMinRating(currentRatingStatus.getMaxRating() + 1);
+            if(newRatingStatus != null){ // there is further rating to be awarded
+                user.setRatingStatus(newRatingStatus);
+            }
+        }
+
         repository.save(user);
     }
 }

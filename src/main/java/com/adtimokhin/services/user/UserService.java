@@ -66,4 +66,7 @@ public interface UserService {
     @Transactional
     void increaseUserRating(User user, int rating);
 
+//    @Transactional
+//    void changeRatingStatus(User user);
+
 }

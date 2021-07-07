@@ -215,7 +215,7 @@
         </tr>
         <#list comments as comment>
             <tr>
-                <td>${comment.user.getFullName()}</td>
+                <td>${comment.user.getFullName()} ${comment.user.getRatingStatus().getName()}</td>
                 <td>${comment.getText()}</td>
                 <td>
                 </td>
@@ -284,7 +284,7 @@
                 </#if>
                 <td>
                     <#list comment.getAnswers() as answer>
-                        <p>${answer.getText()}</p>
+                        <p>${answer.getText()} BY: ${answer.user.getFullName()} ${answer.user.getRatingStatus().getName()}</p>
                         <#if userId != answer.getUser().getId()>
                             <form method="post" action="/add/report">
                                 <input type="hidden" name="id" value="${answer.getId()}">
