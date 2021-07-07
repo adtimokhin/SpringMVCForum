@@ -9,6 +9,7 @@
 
 <div>
     <p>Your rating is: ${user.getRating()}</p>
+    <p>Your rating status: ${user.getRatingStatus().getName()}</p>
     <p>Rating is awarded for activity on the website. The purpose of the rating is to give people that read your
         comments and topics a feel how involved you are into this problem </p>
 </div>
