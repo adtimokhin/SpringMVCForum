@@ -21,5 +21,12 @@ public interface UserRepository extends JpaRepository<User, Long>{
 
     List<User> findAllByEmailVerificationTokenIsNotNull();
 
+    List<User> findAllByPasswordRestoreTokenIsNotNull();
+
     User findByEmailVerificationToken(String token);
+
+    User findByPasswordRestoreToken(String token);
 }
+
+
+// Американский Вандал

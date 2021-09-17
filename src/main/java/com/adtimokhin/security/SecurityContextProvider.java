@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * 14.04.2021
  **/
 @Component
-public class ContextProvider {
+public class SecurityContextProvider {
 
     @Autowired
     private UserService userService;

@@ -57,6 +57,8 @@ public interface UserService {
 
     boolean verifyEmail(String token);
 
+    void setPasswordRestoringToken(User user);
+
     void setRole(User user, Role role);
 
     @Transactional
@@ -65,6 +67,12 @@ public interface UserService {
 
     @Transactional
     void increaseUserRating(User user, int rating);
+
+    List<String> getAllPasswordResetTokens();
+
+    boolean passwordResetTokenExists(String token);
+
+    void setNewPasswordForUserWithToken(String token, String newPassword);
 
 //    @Transactional
 //    void changeRatingStatus(User user);

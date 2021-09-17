@@ -5,7 +5,6 @@ import com.adtimokhin.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -42,11 +41,4 @@ public class DefaultController {
         return "/intro";
     }
 
-    @GetMapping("/verify/{token}")
-    public String verifyEmail(@PathVariable(value = "token") String token) {
-        if (!userService.verifyEmail(token)) {
-            return "failVerification";
-        }
-        return "successVerification";
-    }
 }

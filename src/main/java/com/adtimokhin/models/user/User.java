@@ -38,7 +38,7 @@ public class User {
     @Email(message = "please, enter valid email")
     private String email;
 
-    @Size(min = 5, message = "your password should be at least 5 figures long")
+    @Size(min = 7, message = "your password should be at least 7 figures long")
     private String password;
 
     @ManyToOne
@@ -92,6 +92,9 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "rating_status_id")
     private Rating ratingStatus;
+
+    @Column(name = "password_restore_token")
+    private String passwordRestoreToken;
 
     public User(String email, String password) {
         this.email = email;

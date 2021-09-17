@@ -23,7 +23,7 @@ public class OrganizationValidator {
         }
         errors = new ArrayList<>();
         if (!isEmailValid(email)) {
-            errors.add("Email is invalid!");
+            errors.add("Email is invalid");
         }
         try {
             Integer.parseInt(token);

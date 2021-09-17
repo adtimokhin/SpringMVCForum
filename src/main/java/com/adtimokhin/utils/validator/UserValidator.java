@@ -35,7 +35,7 @@ public class UserValidator {
                     " one uppercase letter and one number");
         }
         if (!isEmailValid(email)) {
-            errors.add("Your email is in invalid form!");
+            errors.add("Your email is in invalid form");
         }
         // User should deal with typo mistakes first and only then should be tested for the validity of their input.
         if (errors.size() != 0) {
@@ -43,16 +43,16 @@ public class UserValidator {
         }
 
         if (userService.getUser(email) != null) {
-            errors.add("User with such email already exists!");
+            errors.add("User with such email already exists");
         }
         if (!password.equals(secondPassword)) {
-            errors.add("The passwords do not match!");
+            errors.add("The passwords do not match");
         }
 
         if (role == null) {
             /*Todo: we don't want to allow anyone to sign up as admin, for example. When signing up the user can
                  be either a student or a parent (at least in the sign up page for students and parents). Realize that!*/
-            errors.add("Incorrect role chosen!");
+            errors.add("Incorrect role chosen");
         }
 
         return (errors.size() != 0) ? errors : null;

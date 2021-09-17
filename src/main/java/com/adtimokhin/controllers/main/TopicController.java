@@ -5,7 +5,7 @@ import com.adtimokhin.models.comment.Comment;
 import com.adtimokhin.models.report.Cause;
 import com.adtimokhin.models.topic.Topic;
 import com.adtimokhin.models.user.User;
-import com.adtimokhin.security.ContextProvider;
+import com.adtimokhin.security.SecurityContextProvider;
 import com.adtimokhin.services.comment.AnswerService;
 import com.adtimokhin.services.comment.CommentService;
 import com.adtimokhin.services.comment.impl.CommentTagsServiceImpl;
@@ -38,7 +38,7 @@ public class TopicController {
 
 
     @Autowired
-    private ContextProvider contextProvider;
+    private SecurityContextProvider contextProvider;
 
     @Autowired
     private TopicService topicService;

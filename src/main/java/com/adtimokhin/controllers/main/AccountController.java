@@ -1,7 +1,7 @@
 package com.adtimokhin.controllers.main;
 
 import com.adtimokhin.models.user.User;
-import com.adtimokhin.security.ContextProvider;
+import com.adtimokhin.security.SecurityContextProvider;
 import com.adtimokhin.services.user.UserFullNameService;
 import com.adtimokhin.services.user.UserService;
 import com.adtimokhin.utils.validator.PasswordValidator;
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 public class AccountController {
 
     @Autowired
-    private ContextProvider contextProvider;
+    private SecurityContextProvider contextProvider;
 
     @Autowired
     private UserService userService;
@@ -63,7 +63,8 @@ public class AccountController {
     }
 
     @GetMapping("/change_password")
-    public String getChangePasswordPage() {
+    public String getChangePasswordPage(Model model) {
+        model.addAttribute("email", contextProvider.getUser().getEmail());
         return "/account/changePasswordPage";
     }
 
@@ -79,7 +80,7 @@ public class AccountController {
             return "/account/changePasswordPage";
         } else {
             userService.changePassword(user, newPassword);
-            return "redirect:/account/";
+            return "redirect:/account/"; // todo: direct to a page that says that password was successfully updated.
         }
     }
 

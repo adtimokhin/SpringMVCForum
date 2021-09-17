@@ -26,20 +26,33 @@ public class PasswordValidator {
             errors.add("Old password does not match");
             return errors;
         }
-        if (!isPasswordValid(newPassword)) {
-            errors.add("Your password should be at least 8 characters long and contain one lowercase letter," +
-                    " one uppercase letter and one number");
-            return errors;
+
+        ArrayList<String> e = validate(newPassword, newPasswordRepeated);
+        if (e != null) {
+            return e;
         }
-        if (!newPassword.equals(newPasswordRepeated)) {
-            errors.add("The passwords do not match!");
-            return errors;
-        }
-        if(newPassword.equals(oldPassword)){
+
+        if (newPassword.equals(oldPassword)) {
             errors.add("Your password match your current password");
             return errors;
         }
         return null;
+    }
+
+    public ArrayList<String> validate(String passwordOne, String passwordTwo) {
+        ArrayList<String> errors = new ArrayList<>();
+        if (!isPasswordValid(passwordOne)) {
+            errors.add("Your password should be at least 8 characters long and contain one lowercase letter, one uppercase letter and one number");
+        }
+        if (!passwordOne.equals(passwordTwo)) {
+            errors.add("The passwords do not match!");
+        }
+
+        if (errors.size() == 0) {
+            return null;
+        }
+
+        return errors;
     }
 
 

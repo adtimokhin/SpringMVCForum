@@ -5,7 +5,7 @@ import com.adtimokhin.models.topic.Topic;
 import com.adtimokhin.models.topic.TopicTag;
 import com.adtimokhin.models.user.User;
 import com.adtimokhin.repositories.topic.TopicRepository;
-import com.adtimokhin.security.ContextProvider;
+import com.adtimokhin.security.SecurityContextProvider;
 import com.adtimokhin.services.topic.TopicService;
 import com.adtimokhin.services.topic.TopicTagService;
 import org.apache.log4j.Logger;
@@ -32,7 +32,7 @@ public class TopicServiceImpl implements TopicService {
 
 
     @Autowired
-    private ContextProvider contextProvider;
+    private SecurityContextProvider contextProvider;
 
 
     private static final Logger logger = Logger.getLogger("file");

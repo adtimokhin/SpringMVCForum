@@ -29,7 +29,7 @@ public class Company {
 
     private String email;
 
-    private String phone;
+    private String phone; // todo: check that is made out of digits only.
 
     private String location;
 

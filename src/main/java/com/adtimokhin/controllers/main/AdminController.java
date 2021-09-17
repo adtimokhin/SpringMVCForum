@@ -6,7 +6,7 @@ import com.adtimokhin.models.company.Company;
 import com.adtimokhin.models.report.Report;
 import com.adtimokhin.models.topic.Topic;
 import com.adtimokhin.models.user.User;
-import com.adtimokhin.security.ContextProvider;
+import com.adtimokhin.security.SecurityContextProvider;
 import com.adtimokhin.services.company.CompanyService;
 import com.adtimokhin.services.report.ReportService;
 import com.adtimokhin.services.user.UserService;
@@ -42,7 +42,7 @@ public class AdminController {
     private CompanyService companyService;
 
     @Autowired
-    private ContextProvider contextProvider;
+    private SecurityContextProvider contextProvider;
 
     @Autowired
     private UserValidator userValidator;

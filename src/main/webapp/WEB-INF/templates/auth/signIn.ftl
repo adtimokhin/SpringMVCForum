@@ -21,7 +21,7 @@
 </div>
 <form action="/login/process" method="post">
     <div>
-        <p>Enter email or phone number</p>
+        <p>Enter your email</p>
         <input name="email" type="text">
     </div>
     <div>
@@ -35,6 +35,7 @@
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
     <input type="submit">
 </form>
+<a href="/restore_password">I forgot my password</a>
 <a href="/sign_up">Sign up?</a>
 </body>
 </html>

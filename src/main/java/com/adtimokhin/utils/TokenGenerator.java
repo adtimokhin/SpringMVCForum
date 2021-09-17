@@ -139,11 +139,15 @@ public class TokenGenerator {
 
     //email verification token generation
 
-    public String generateEmailVerificationToken() {
+    public String generateUniqueToken(int length, boolean isEmailVerificationToken) {
         StringBuilder newToken = new StringBuilder();
-        int tokenLength = 20;
-        List<String> tokens = userService.getAllEmailVerificationTokens();
-        for (int i = 0; i < tokenLength; i++) {
+        List<String> tokens;
+        if (isEmailVerificationToken){
+         tokens = userService.getAllEmailVerificationTokens();
+        }else {
+            tokens = userService.getAllPasswordResetTokens();
+        }
+        for (int i = 0; i < length; i++) {
             //generating a random symbol for a new token.
             char symbol = generateSymbol();
             if (tokens.size() != 0) {
@@ -159,17 +163,25 @@ public class TokenGenerator {
             newToken.append(symbol);
         }
         if (tokens.size() != 0) { //That means that token is not unique. Hence, we should do the token again.
-            return generateEmailVerificationToken();
+            return generateUniqueToken(length, isEmailVerificationToken);
         }
         return newToken.toString();
     }
 
+
     private char generateSymbol() {
-        int i = random.nextInt(91);
-        int j = 124 - i;
-        if (j == 47 || j == 58 || j == 59 || j == 96) {
-            j++;
+
+        int i = random.nextInt(3);
+        int j;
+
+        if (i == 0){
+            j = 57 - random.nextInt(10);
+        }else if (i == 1){
+            j = 90 - random.nextInt(26);
+        }else {
+            j = 122 - random.nextInt(26);
         }
+
         return Character.toString(j).toCharArray()[0];
     }
 

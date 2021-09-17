@@ -8,11 +8,11 @@ import com.adtimokhin.models.user.UserName;
 import com.adtimokhin.models.user.UserSurname;
 import com.adtimokhin.repositories.user.RatingRepository;
 import com.adtimokhin.repositories.user.UserRepository;
-import com.adtimokhin.security.ContextProvider;
+import com.adtimokhin.security.SecurityContextProvider;
 import com.adtimokhin.services.company.TokenService;
 import com.adtimokhin.services.user.UserFullNameService;
 import com.adtimokhin.services.user.UserService;
-import com.adtimokhin.utils.EmailSender;
+import com.adtimokhin.utils.email.SimpleEmailSender;
 import com.adtimokhin.utils.TokenGenerator;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,14 +50,14 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private ContextProvider contextProvider;
+    private SecurityContextProvider contextProvider;
 
 
     @Autowired
     private TokenGenerator tokenGenerator;
 
     @Autowired
-    private EmailSender emailSender;
+    private SimpleEmailSender emailSender;
 
     private static final Logger logger = Logger.getLogger("file");
     private static final Logger adminLogger = Logger.getLogger("admin");
@@ -87,7 +87,10 @@ public class UserServiceImpl implements UserService {
         if (generateRandomName) {
             assignUserFullName(user);
         }
-        user.setEmailVerificationToken(tokenGenerator.generateEmailVerificationToken());
+        user.setEmailVerificationToken(tokenGenerator.generateUniqueToken(20, true));
+        user.setRating(0);
+        user.setRatingStatus(ratingRepository.findByMinRating(0));
+
         repository.save(user);
 
         emailSender.sentEmailVerificationLetter(user);
@@ -281,6 +284,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void setPasswordRestoringToken(User user) {
+        if (user == null) {
+            logger.info("Tried give a token for password recovery to a null user");
+            return;
+        }
+        user.setPasswordRestoreToken(tokenGenerator.generateUniqueToken(30, false));
+        repository.save(user);
+
+        emailSender.sentPasswordRestoreEmail(user);
+    }
+
+    @Override
     public void setRole(User user, Role role) {
         if (role.equals(Role.ROLE_ADMIN)) {
             User u = contextProvider.getUser();
@@ -331,14 +346,50 @@ public class UserServiceImpl implements UserService {
         user.setRating(newRating);
 
         Rating currentRatingStatus = user.getRatingStatus();
-        if(newRating > currentRatingStatus.getMaxRating()){
+        if (newRating > currentRatingStatus.getMaxRating()) {
             //change rating
             Rating newRatingStatus = ratingRepository.findByMinRating(currentRatingStatus.getMaxRating() + 1);
-            if(newRatingStatus != null){ // there is further rating to be awarded
+            if (newRatingStatus != null) { // there is further rating to be awarded
                 user.setRatingStatus(newRatingStatus);
             }
         }
 
         repository.save(user);
+    }
+
+    @Override
+    public List<String> getAllPasswordResetTokens() {
+        List<User> users = repository.findAllByPasswordRestoreTokenIsNotNull();
+        if (users == null) {
+            return null;
+        }
+        List<String> tokens = new ArrayList<>();
+        for (User user :
+                users) {
+            tokens.add(user.getPasswordRestoreToken());
+        }
+        return tokens;
+    }
+
+    @Override
+    public boolean passwordResetTokenExists(String token) {
+        User user = repository.findByPasswordRestoreToken(token);
+        return user != null;
+    }
+
+    @Override
+    public void setNewPasswordForUserWithToken(String token, String newPassword) {
+        //TODO: add later email "sentage" to user's email that tells that his password was changed.
+        User user = repository.findByPasswordRestoreToken(token);
+        if (user == null) {
+            logger.info("Tried to change password with an incorrect password reset token!");
+            return;
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setPasswordRestoreToken(null);
+        repository.save(user);
+
+        logger.info("User with id" + user.getId() + " had changed his/her password.");
     }
 }

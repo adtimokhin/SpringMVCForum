@@ -6,7 +6,7 @@ import com.adtimokhin.models.comment.CommentTag;
 import com.adtimokhin.models.topic.Topic;
 import com.adtimokhin.models.user.User;
 import com.adtimokhin.repositories.comment.CommentRepository;
-import com.adtimokhin.security.ContextProvider;
+import com.adtimokhin.security.SecurityContextProvider;
 import com.adtimokhin.services.comment.CommentService;
 import com.adtimokhin.services.topic.TopicService;
 import org.apache.log4j.Logger;
@@ -39,7 +39,7 @@ public class CommentServiceImpl implements CommentService {
 
 
     @Autowired
-    private ContextProvider contextProvider;
+    private SecurityContextProvider contextProvider;
 
     private static final Logger logger = Logger.getLogger("file");
 
@@ -177,6 +177,8 @@ public class CommentServiceImpl implements CommentService {
             logger.info("Tried to flag a  comment with id " + id + " by a user with id " + user.getId() + " that didn't create the comment.");
         }
     }
+
+    //TODO: create unflag()
 
 
 }

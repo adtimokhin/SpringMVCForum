@@ -4,7 +4,7 @@ import com.adtimokhin.enums.Role;
 import com.adtimokhin.models.report.Cause;
 import com.adtimokhin.models.user.User;
 import com.adtimokhin.repositories.report.CauseRepository;
-import com.adtimokhin.security.ContextProvider;
+import com.adtimokhin.security.SecurityContextProvider;
 import com.adtimokhin.services.report.CauseService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class CauseServiceImpl implements CauseService {
     private CauseRepository repository;
 
     @Autowired
-    private ContextProvider contextProvider;
+    private SecurityContextProvider contextProvider;
 
     private static final Logger logger = Logger.getLogger("file");
 

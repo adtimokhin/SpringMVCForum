@@ -23,7 +23,7 @@ public class LogAdminAspect {
     final private static Logger logger = Logger.getLogger("admin");
 
 
-    @After("execution( * com.adtimokhin.services.user.UserService.banUser(..))")
+    @After("execution(* com.adtimokhin.services.user.UserService.banUser(..))")
     public void afterUserBannedInvocation(JoinPoint jp) {
         System.out.println("User " + ((User) jp.getArgs()[0]).getId() + " was banned at " + System.currentTimeMillis());
         logger.info("User " + ((User) jp.getArgs()[0]).getId() + " was banned");

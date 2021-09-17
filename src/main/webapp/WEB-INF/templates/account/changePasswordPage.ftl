@@ -24,5 +24,12 @@
     <input type="submit" value="change password">
 </form>
 </div>
+<div>
+    <form method="post" action="/restore_password">
+        <input type="hidden" name="email" value="${email}">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+        <input type="submit" value="Forgot your password?">
+    </form>
+</div>
 </body>
 </html>
